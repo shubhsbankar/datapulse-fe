@@ -11,6 +11,8 @@ import {
 } from "@/store/userfeat/dvcompftThunks";
 import { toast } from "react-hot-toast";
 import { cn } from "@/lib/utils";
+import {  getTableColumnsAsync
+} from "@/store/userfeat/dvcompddThunks";
 
 interface FtFormProps {
   datasets: Dataset[];
@@ -43,11 +45,23 @@ export function FtForm({
 
   const [comments, setComments] = useState(selectedRecord?.comments || "");
   const [version, setVersion] = useState(selectedRecord?.version || 1);
+  const [availableDateFieldName, setAvailableDateFieldName] = useState<string[]>([]);
 
   // Get unique project names from datasets
   const projects = useAppSelector(state => state.project.projectAssigns.filter(pa => pa.useremail == state.user.currentUser.useremail && pa.is_active).map(pa => pa.projectshortname));
   const uniqueProjects = Array.from(new Set(projects))
 
+ useEffect(() => {
+      const fetchDateFieldNames = async () => {
+        // if (selectedDataset) {
+          const resp = await dispatch(getTableColumnsAsync({ project: selectedProject, comptype: componentType, compname: componentName }));
+          if (resp.payload.status === 200) {
+            setAvailableDateFieldName(resp.payload.data || []);
+          }
+        // }
+      };
+      fetchDateFieldNames();
+    }, [dispatch, selectedProject, componentName]);
   const isFormValid = () => {
     return (
       selectedProject !== '' &&
@@ -282,15 +296,19 @@ export function FtForm({
           >
             Date Field Name
           </label>
-          <input
-            type="text"
+          <select
             id="dateFieldName"
             value={dateFieldName}
             onChange={(e) => setDateFieldName(e.target.value)}
-            // disabled={componentSubtype === 'type1'}
             className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
             required
-          />
+          >
+            <option value="">Select Date Field Name</option>
+               {
+                availableDateFieldName.map(df => <option value={df} key={df}>{df}</option>)
+              }
+                
+          </select>
         </div>
         <div>
           <label

@@ -6,7 +6,8 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { createDvCompBrgAsync, getAllDvCompBrgColumnsAsync, testDvCompBrgAsync } from "@/store/userfeat/dvcompbrgThunks";
 import { toast } from "react-hot-toast";
 import { cn } from "@/lib/utils";
-import SortableMultiSelect from "@/components/ui/multiselect";
+import {  getTableColumnsAsync
+} from "@/store/userfeat/dvcompddThunks";
 
 interface BrgFormProps {
   selectedProject: string;
@@ -38,6 +39,7 @@ export function BrgForm({
   const [partsNumber, setPartsNumber] = useState(0);
   const [parts, setParts] = useState<string[]>([]);
   const [isValidated, setIsValidated] = useState(false);
+  const [availableDateFieldName, setAvailableDateFieldName] = useState<string[]>([]);
   const [availableColumns, setAvailableColumns] = useState<string[]>([]);
   const [dateFieldName, setDateFieldName] = useState("");
 
@@ -76,6 +78,18 @@ export function BrgForm({
     }
   }, [selectedProject, componentType, componentName, version,componentSubtype]);
 
+
+ useEffect(() => {
+      const fetchDateFieldNames = async () => {
+        // if (selectedDataset) {
+          const resp = await dispatch(getTableColumnsAsync({ project: selectedProject, comptype: componentType, compname: componentName }));
+          if (resp.payload.status === 200) {
+            setAvailableDateFieldName(resp.payload.data || []);
+          }
+        // }
+      };
+      fetchDateFieldNames();
+    }, [dispatch, selectedProject, componentName]);
 
 
   // Reset dependent fields when parent selection changes
@@ -323,15 +337,20 @@ export function BrgForm({
           >
             Date Field Name
           </label>
-          <input
-            type="text"
+          <select
             id="dateFieldName"
             value={dateFieldName}
-            disabled={processType === 'OW'}
             onChange={(e) => setDateFieldName(e.target.value)}
+            disabled={processType === 'OW'}
             className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
             required
-          />
+          >
+            <option value="">Select Date Field Name</option>
+               {
+                availableDateFieldName.map(df => <option value={df} key={df}>{df}</option>)
+              }
+                
+          </select>
         </div>
 
         <div>
