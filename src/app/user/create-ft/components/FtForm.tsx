@@ -1,14 +1,14 @@
 "use client";
 
-import { Dataset, RdvCompFt } from "@/types/userfeat";
+import { Dataset, DvCompFt } from "@/types/userfeat";
 import { useState, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
-  createRdvCompFtAsync,
+  createDvCompFtAsync,
   // getAllRdvCompFtColumnsAsync,
-  testRdvCompFtAsync,
-  updateRdvCompFtAsync,
-} from "@/store/userfeat/rdvcompftThunks";
+  testDvCompFtAsync,
+  updateDvCompFtAsync,
+} from "@/store/userfeat/dvcompftThunks";
 import { toast } from "react-hot-toast";
 import { cn } from "@/lib/utils";
 
@@ -16,7 +16,7 @@ interface FtFormProps {
   datasets: Dataset[];
   selectedProject: string;
   setSelectedProject: (project: string) => void;
-  selectedRecord?: RdvCompFt; // For update mode
+  selectedRecord?: DvCompFt; // For update mode
   isUpdate: boolean;
   setQueryResult: (result: { headers: string[]; rows: any[][]; error: string }) => void;
 }
@@ -64,7 +64,7 @@ export function FtForm({
     }
 
     try {
-      const payload: RdvCompFt = {
+      const payload: DvCompFt = {
         projectshortname: selectedProject,
         comptype: componentType,
         compname: componentName,
@@ -91,7 +91,7 @@ export function FtForm({
       //   }
       // );
 
-      const data = await dispatch(testRdvCompFtAsync(payload)).unwrap()
+      const data = await dispatch(testDvCompFtAsync(payload)).unwrap()
       setQueryResult(data.data);
       if (data.data.error) {
         setIsValidated(false);
@@ -137,7 +137,7 @@ export function FtForm({
     if (!(await handleValidate())) return;
 
     try {
-      const payload: RdvCompFt = {
+      const payload: DvCompFt = {
         projectshortname: selectedProject,
         comptype: componentType,
         compname: componentName,
@@ -151,14 +151,14 @@ export function FtForm({
 
       if (isUpdate) {
         // Update mode
-        await dispatch(updateRdvCompFtAsync({
-          rdvid: selectedRecord?.rdvid || 0,
+        await dispatch(updateDvCompFtAsync({
+          rdvid: selectedRecord?.dvid || 0,
           rdvcompftData: payload
         })).unwrap();
         toast.success("FT configuration updated successfully");
       } else {
         // Create mode
-        await dispatch(createRdvCompFtAsync(payload)).unwrap();
+        await dispatch(createDvCompFtAsync(payload)).unwrap();
         toast.success("FT configuration created successfully");
       }
 

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { getAllDatasetsAsync } from '@/store/userfeat/datasetThunks';
-import { getAllRdvCompDdsAsync } from '@/store/userfeat/rdvcompddThunks';
+import { getAllRdvCompDdsAsync } from '@/store/userfeat/dvcompddThunks';
 import { toast } from 'react-hot-toast';
 import { DdForm } from '../../components/DdForm';
 

@@ -1,15 +1,15 @@
 "use client";
 
-import { Dataset, RdvCompDd, DvCompSg1b } from "@/types/userfeat";
+import { Dataset, DvCompDd } from "@/types/userfeat";
 import { useState, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
-  createRdvCompDdAsync,
-  getAllRdvCompDdColumnsAsync,
-  testRdvCompDdAsync,
-  updateRdvCompDdAsync,
+  createDvCompDdAsync,
+  getAllDvCompDdColumnsAsync,
+  testDvCompDdAsync,
+  updateDvCompDdAsync,
   getTableColumnsAsync
-} from "@/store/userfeat/rdvcompddThunks";
+} from "@/store/userfeat/dvcompddThunks";
 import { toast } from "react-hot-toast";
 import { cn } from "@/lib/utils";
 import SortableMultiSelect from "@/components/ui/multiselect";
@@ -18,7 +18,7 @@ interface DdFormProps {
   datasets: Dataset[];
   selectedProject: string;
   setSelectedProject: (project: string) => void;
-  selectedRecord?: RdvCompDd; // For update mode
+  selectedRecord?: DvCompDd; // For update mode
   isUpdate: boolean;
   setQueryResult: (result: { headers: string[]; rows: any[][]; error: string }) => void;
 }
@@ -81,7 +81,7 @@ export function DdForm({
     }
 
     try {
-      const payload: RdvCompDd = {
+      const payload: DvCompDd = {
         projectshortname: selectedProject,
         comptype: componentType,
         compname: componentName,
@@ -108,7 +108,7 @@ export function DdForm({
       //   }
       // );
 
-      const data = await dispatch(testRdvCompDdAsync(payload)).unwrap()
+      const data = await dispatch(testDvCompDdAsync(payload)).unwrap()
       setQueryResult(data.data);
       if (data.data.error) {
         setIsValidated(false);
@@ -166,7 +166,7 @@ export function DdForm({
     if (!(await handleValidate())) return;
 
     try {
-      const payload: RdvCompDd = {
+      const payload: DvCompDd = {
         projectshortname: selectedProject,
         comptype: componentType,
         compname: componentName,
@@ -183,14 +183,14 @@ export function DdForm({
 
       if (isUpdate) {
         // Update mode
-        await dispatch(updateRdvCompDdAsync({
-          rdvid: selectedRecord?.rdvid || 0,
+        await dispatch(updateDvCompDdAsync({
+          rdvid: selectedRecord?.dvid || 0,
           rdvcompddData: payload
         })).unwrap();
         toast.success("DD configuration updated successfully");
       } else {
         // Create mode
-        await dispatch(createRdvCompDdAsync(payload)).unwrap();
+        await dispatch(createDvCompDdAsync(payload)).unwrap();
         toast.success("DD configuration created successfully");
       }
 

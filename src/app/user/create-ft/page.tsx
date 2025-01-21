@@ -10,7 +10,7 @@ import { FtTabs } from './components/FtTabs';
 import { FtTable } from './components/FtTable';
 import { formatDate } from '@/utils/dateFormatter';
 import { SqlResults } from '../execute-sql/components/SqlResults';
-import { getAllRdvCompFtsAsync } from '@/store/userfeat/rdvcompftThunks';
+import { getAllDvCompFtsAsync } from '@/store/userfeat/dvcompftThunks';
 
 export default function ConfigFtPage() {
   const dispatch = useAppDispatch();
@@ -25,7 +25,7 @@ export default function ConfigFtPage() {
     dispatch(getAllDatasetsAsync());
     dispatch(getAllRdvCompDhAsync());
     dispatch(getAllDvCompSg1sAsync());
-    dispatch(getAllRdvCompFtsAsync());
+    dispatch(getAllDvCompFtsAsync());
   }, [dispatch]);
 
   const exportToCSV = (data: any[], filename: string) => {

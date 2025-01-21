@@ -21,7 +21,7 @@ export function DdTabs({
   const dhs = useAppSelector((state) => state.userfeat.rdvcomdh).filter(dh => isProjectAssignedAndActive(dh.projectshortname));
   const dls = useAppSelector((state) => state.userfeat.rdvcompdl).filter(dh => isProjectAssignedAndActive(dh.projectshortname));
   const dss = useAppSelector((state) => state.userfeat.rdvcompds).filter(dh => isProjectAssignedAndActive(dh.projectshortname));
-  const sgs = useAppSelector((state) => state.userfeat.rdvcompdd)?.filter(dh => isProjectAssignedAndActive(dh.projectshortname));
+  const sgs = useAppSelector((state) => state.userfeat.dvcompdd)?.filter(dh => isProjectAssignedAndActive(dh.projectshortname));
   console.log({sgs});
   return (
     <div className="bg-white shadow rounded-lg p-6">

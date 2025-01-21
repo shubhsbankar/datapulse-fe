@@ -16,8 +16,8 @@ import {
   DvCompPt,
   DvCompBrg,
   DvCompSg2,
-  RdvCompDd,
-  RdvCompFt
+  DvCompDd,
+  DvCompFt
 } from "@/types/userfeat";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
@@ -30,8 +30,8 @@ interface UserFeatState {
   rdvcompdl: RdvCompDl[];
   rdvcomdh: RdvCompDh[];
   rdvcompds: RdvCompDs[];
-  rdvcompdd: RdvCompDd[];
-  rdvcompft: RdvCompFt[];
+  dvcompdd: DvCompDd[];
+  dvcompft: DvCompFt[];
   rs: Rs[];
   dping: Dping[];
   rt: Rt[];
@@ -61,8 +61,8 @@ const initialState: UserFeatState = {
   rdvcomdh: [],
   tenantbkcc: [],
   dvcompsg2: [],
-  rdvcompdd: [],
-  rdvcompft: [],
+  dvcompdd: [],
+  dvcompft: [],
 };
 
 export const userfeatSlice = createSlice({
@@ -93,11 +93,11 @@ export const userfeatSlice = createSlice({
     setRdvCompDs: (state, action: PayloadAction<RdvCompDs[]>) => {
       state.rdvcompds = action.payload;
     },
-    setRdvCompDd: (state, action: PayloadAction<RdvCompDd[]>) => {
-      state.rdvcompdd = action.payload;
+    setDvCompDd: (state, action: PayloadAction<DvCompDd[]>) => {
+      state.dvcompdd = action.payload;
     },
-    setRdvCompFt: (state, action: PayloadAction<RdvCompFt[]>) => {
-      state.rdvcompft = action.payload;
+    setDvCompFt: (state, action: PayloadAction<RdvCompFt[]>) => {
+      state.dvcompft = action.payload;
     },
     setRs: (state, action: PayloadAction<Rs[]>) => {
       state.rs = action.payload;
@@ -147,8 +147,8 @@ export const {
   setDvBojSg1,
   setRdvCompDh,
   setTenantBkcc,
-  setRdvCompDd,
-  setRdvCompFt
+  setDvCompDd,
+  setDvCompFt
 } = userfeatSlice.actions;
 
 export default userfeatSlice.reducer;

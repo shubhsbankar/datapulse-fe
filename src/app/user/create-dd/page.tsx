@@ -10,7 +10,7 @@ import { DdTabs } from './components/DdTabs';
 import { DdTable } from './components/DdTable';
 import { formatDate } from '@/utils/dateFormatter';
 import { SqlResults } from '../execute-sql/components/SqlResults';
-import { getAllRdvCompDdsAsync } from '@/store/userfeat/rdvcompddThunks';
+import { getAllDvCompDdsAsync } from '@/store/userfeat/dvcompddThunks';
 
 export default function ConfigDdPage() {
   const dispatch = useAppDispatch();
@@ -25,7 +25,7 @@ export default function ConfigDdPage() {
     dispatch(getAllDatasetsAsync());
     dispatch(getAllRdvCompDhAsync());
     dispatch(getAllDvCompSg1sAsync());
-    dispatch(getAllRdvCompDdsAsync());
+    dispatch(getAllDvCompDdsAsync());
   }, [dispatch]);
 
   const exportToCSV = (data: any[], filename: string) => {

@@ -1,6 +1,6 @@
 'use client';
 
-import { RdvCompFt } from "@/types/userfeat";
+import { DvCompFt } from "@/types/userfeat";
 import { Search, ChevronLeft, ChevronRight, Filter, Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/dropdown';
 import { formatDate } from '@/utils/dateFormatter';
@@ -10,7 +10,7 @@ import { useState } from 'react';
 const ITEMS_PER_PAGE = 10;
 
 interface FtTableProps {
-  sgs: RdvCompFt[];
+  sgs: DvCompFt[];
 }
 
 // -- CREATE TABLE IF NOT EXISTS tst1a.dvcompsg1
@@ -57,7 +57,7 @@ export enum FtColumns {
   // // actions = 'Actions',
   // partsnum = 'partsnum',
   // parts = 'parts',
-  rdvid = 'rdvid',
+  dvid = 'dvid',
   projectshortname = 'projectshortname',
   comptype = 'comptype',
   compname = 'compname',
@@ -72,7 +72,7 @@ export enum FtColumns {
 
 }
 
-export function FtTable({ sgs }: SgTableProps) {
+export function FtTable({ sgs }: FtTableProps) {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -208,14 +208,14 @@ export function FtTable({ sgs }: SgTableProps) {
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {paginatedSgs?.map((sg) => (
-              <tr key={sg?.rdvid}>
+              <tr key={sg?.dvid}>
                 {Object.values(FtColumns).map(column => (
                   visibleColumns.has(column) && (
                     <td key={column} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {column === 'createdate' ? formatDate(sg[column] || '') :
                        column === 'sqltext' ? 
                        (Array.isArray(sg[column]) ? sg[column].join(', ') : sg[column]) :
-                       sg[column as keyof RdvCompFt]}
+                       sg[column as keyof DvCompFt]}
                     </td>
                   )
                 ))}

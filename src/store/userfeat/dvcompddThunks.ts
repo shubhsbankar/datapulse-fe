@@ -1,17 +1,17 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { RdvCompFt} from '@/types/userfeat';
-import { setRdvCompFt } from './userfeatSlice';
+import { DvCompDd } from '@/types/userfeat';
+import { setDvCompDd } from './userfeatSlice';
 import { backendLink } from '@/utils/links';
 import { RootState } from '../store';
 import { ErrorResponse } from '@/types/response';
 import { isSuccessful } from '@/utils/helpers';
 
-export const getAllRdvCompFtsAsync = createAsyncThunk<any, void, { rejectValue: ErrorResponse }>(
-    'rdvcompft/getAllRdvCompFt',
+export const getAllDvCompDdsAsync = createAsyncThunk<any, void, { rejectValue: ErrorResponse }>(
+    'dvcompdd/getAllDvCompDd',
     async (_, { rejectWithValue, getState, dispatch }) => {
         try {
             const state = getState() as RootState;
-            const response = await fetch(`${backendLink}/rdvcompft/all`, {
+            const response = await fetch(`${backendLink}/dvcompdd/all`, {
                 headers: {
                     'Authorization': `Bearer ${state.auth.token}`
                 }
@@ -19,84 +19,83 @@ export const getAllRdvCompFtsAsync = createAsyncThunk<any, void, { rejectValue: 
 
             const jsonResponse = await response.json();
             if (isSuccessful(jsonResponse.status)) {
-                dispatch(setRdvCompFt(jsonResponse.data));
+                dispatch(setDvCompDd(jsonResponse.data));
                 return jsonResponse;
             }
             return rejectWithValue(jsonResponse as ErrorResponse);
         } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : 'Failed to fetch rdvcompft';
+            const errorMessage = error instanceof Error ? error.message : 'Failed to fetch dvcompdd';
             return rejectWithValue({ message: errorMessage });
         }
     }
 );
 
-export const createRdvCompFtAsync = createAsyncThunk<any, RdvCompFt, { rejectValue: ErrorResponse }>(
-    'rdvcompft/createRdvCompFt',
-    async (rdvcompft, { rejectWithValue, getState, dispatch }) => {
+export const createDvCompDdAsync = createAsyncThunk<any, DvCompDd, { rejectValue: ErrorResponse }>(
+    'dvcompdd/createDvCompDd',
+    async (rdvcompdd, { rejectWithValue, getState, dispatch }) => {
         try {
-            // console.log("rdvcompft",rdvcompft)
             const state = getState() as RootState;
-            const response = await fetch(`${backendLink}/rdvcompft/create`, {
+            const response = await fetch(`${backendLink}/dvcompdd/create`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${state.auth.token}`
                 },
-                body: JSON.stringify(rdvcompft)
+                body: JSON.stringify(rdvcompdd)
             });
 
             const jsonResponse = await response.json();
             if (isSuccessful(jsonResponse.status)) {
-                dispatch(getAllRdvCompFtsAsync());
+                dispatch(getAllDvCompDdsAsync());
                 return jsonResponse;
             }
             return rejectWithValue(jsonResponse as ErrorResponse);
         } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : 'Failed to create rdvcompft';
+            const errorMessage = error instanceof Error ? error.message : 'Failed to create dvcompdd';
             return rejectWithValue({ message: errorMessage });
         }
     }
 );
 
-export const updateRdvCompFtAsync = createAsyncThunk<any, { rdvid: number; rdvcompftData: Partial<RdvCompDh> }, { rejectValue: ErrorResponse }>(
-    'rdvcompft/updateRdvCompDh',
-    async ({ rdvid, rdvcompftData }, { rejectWithValue, getState, dispatch }) => {
+export const updateDvCompDdAsync = createAsyncThunk<any, { rdvid: number; rdvcompddData: Partial<DvCompDd> }, { rejectValue: ErrorResponse }>(
+    'rdvcompdd/updateRdvCompDd',
+    async ({ rdvid, rdvcompddData }, { rejectWithValue, getState, dispatch }) => {
         try {
             const state = getState() as RootState;
-            const response = await fetch(`${backendLink}/rdvcompft/update/${rdvid}`, {
+            const response = await fetch(`${backendLink}/dvcompdd/update/${rdvid}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${state.auth.token}`
                 },
-                body: JSON.stringify(rdvcompftData)
+                body: JSON.stringify(rdvcompddData)
             });
 
             const jsonResponse = await response.json();
             if (isSuccessful(jsonResponse.status)) {
-                dispatch(getAllRdvCompFtsAsync());
+                dispatch(getAllDvCompDdsAsync());
                 return jsonResponse;
             }
             return rejectWithValue(jsonResponse as ErrorResponse);
         } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : 'Failed to update rdvcompft';
+            const errorMessage = error instanceof Error ? error.message : 'Failed to update dvcompdd';
             return rejectWithValue({ message: errorMessage });
         }
     }
 );
 
-export const testRdvCompFtAsync = createAsyncThunk<any, RdvCompFt, { rejectValue: ErrorResponse }>(
-    'rdvcompft/testRdvCompDh',
-    async (rdvcompft, { rejectWithValue, getState }) => {
+export const testDvCompDdAsync = createAsyncThunk<any, DvCompDd, { rejectValue: ErrorResponse }>(
+    'dvcompdd/testDvCompDd',
+    async (rdvcompdd, { rejectWithValue, getState }) => {
         try {
             const state = getState() as RootState;
-            const response = await fetch(`${backendLink}/rdvcompft/test`, {
+            const response = await fetch(`${backendLink}/dvcompdd/test`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${state.auth.token}`
                 },
-                body: JSON.stringify(rdvcompft)
+                body: JSON.stringify(rdvcompdd)
             });
 
             const jsonResponse = await response.json();
@@ -105,18 +104,44 @@ export const testRdvCompFtAsync = createAsyncThunk<any, RdvCompFt, { rejectValue
             }
             return rejectWithValue(jsonResponse as ErrorResponse);
         } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : 'Failed to test rdvcompft';
+            const errorMessage = error instanceof Error ? error.message : 'Failed to test rdvcompdd';
             return rejectWithValue({ message: errorMessage });
         }
     }
-); 
+);
+
+export const getAllDvCompDdColumnsAsync = createAsyncThunk<any, void, { rejectValue: ErrorResponse }>(
+    'dvcompdd/getAllDvCompDdColumns',
+    async (payload, { rejectWithValue, getState }) => {
+        try {
+            const state = getState() as RootState;
+            const response = await fetch(`${backendLink}/dvcompdd/columns`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${state.auth.token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const jsonResponse = await response.json();
+            if (isSuccessful(jsonResponse.status)) {
+                return jsonResponse;
+            }
+            return rejectWithValue(jsonResponse as ErrorResponse);
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Failed to fetch rdvcompdd columns';
+            return rejectWithValue({ message: errorMessage });
+        }
+    }
+);
 
 export const getTableColumnsAsync = createAsyncThunk<any, any, { rejectValue: ErrorResponse }>(
-    'rdvcompft/getTableColumns',
+    'dvcompdd/getTableColumns',
     async (data, { rejectWithValue, getState }) => {
         try {
             const state = getState() as RootState;
-            const response = await fetch(`${backendLink}/rdvcompft/get-columns`, {
+            const response = await fetch(`${backendLink}/dvcompdd/get-columns`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -135,4 +160,4 @@ export const getTableColumnsAsync = createAsyncThunk<any, any, { rejectValue: Er
             return rejectWithValue({ message: errorMessage });
         }
     }
-); 
+);

@@ -218,8 +218,8 @@ export interface DvCompBrg {
   datefieldname?: string;
 }
 
-export interface RdvCompDd {
-  rdvid?: number;
+export interface DvCompDd {
+  dvid?: number;
   projectshortname: string;
   comptype?: string;
   compname: string;
@@ -233,8 +233,8 @@ export interface RdvCompDd {
   datefieldname?: string;
 }
 
-export interface RdvCompFt {
-  rdvid?: number;
+export interface DvCompFt {
+  dvid?: number;
   projectshortname: string;
   comptype?: string;
   compname: string;
