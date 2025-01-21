@@ -108,7 +108,7 @@ export function BrgForm({
       componentName !== "" &&
       sqlText !== "" &&
       // processType !== "" &&
-      dateFieldName !== "" &&
+      processType !== 'OW' ? dateFieldName !== "" : true  &&
       comments !== "" &&
       version > 0 &&
       partsNumber == parts.length
