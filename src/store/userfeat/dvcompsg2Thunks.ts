@@ -36,6 +36,7 @@ export const createDvCompSg2Async = createAsyncThunk<any, DvCompSg2, { rejectVal
     async (dvcompsg2, { rejectWithValue, getState, dispatch }) => {
         try {
             const state = getState() as RootState;
+            console.log("Create dvcompsg2 :",dvcompsg2);
             const response = await fetch(`${backendLink}/dvcompsg2/create`, {
                 method: 'POST',
                 headers: {
@@ -90,6 +91,7 @@ export const testDvCompSg2Async = createAsyncThunk<any, DvCompSg2, { rejectValue
     async (dvcompsg2, { rejectWithValue, getState }) => {
         try {
             const state = getState() as RootState;
+            console.log("dvcompsg2",dvcompsg2);
             const response = await fetch(`${backendLink}/dvcompsg2/test`, {
                 method: 'POST',
                 headers: {

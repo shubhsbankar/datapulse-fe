@@ -165,11 +165,17 @@ export interface DvCompSg1 {
 }
 
 export interface DvCompSg2 {
-  rdvid?: number;
+  dvid?: number;
+  projectshortname: string;
   comptype: string;
+  compname: string;
   compsubtype: string;
+  sqltext?: string;
   version?: number;
   createdate?: string;
+  compshortname?: string;
+  user_email?: string;
+  comments?: string;
 }
 
 

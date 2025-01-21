@@ -12,7 +12,7 @@ import {
 import { toast } from "react-hot-toast";
 import { cn } from "@/lib/utils";
 
-interface SgFormProps {
+interface Sg2FormProps {
   datasets: Dataset[];
   selectedProject: string;
   setSelectedProject: (project: string) => void;
@@ -28,33 +28,32 @@ export function Sg2Form({
   selectedRecord,
   isUpdate = false,
   setQueryResult,
-}: SgFormProps) {
+}: Sg2FormProps) {
   const dispatch = useAppDispatch();
   const [isValidated, setIsValidated] = useState(false);
-  // const [componentName, setComponentName] = useState(selectedRecord?.compname || "");
+  const [componentName, setComponentName] = useState(selectedRecord?.compname || "");
   const [componentType, setComponentType] = useState<"bv" | "im" | "others" | "dv">(
     (selectedRecord?.comptype as "bv" | "im" | "others" | "dv") || "bv"
   );
   const [componentSubtype, setComponentSubtype] = useState<
     "brdg" | "derived-cal" | "derived-cs" | "derived-el" | "derived-others" | "dd" | "ft" | "others" | "dh" | "ds" | "dl"
   >((selectedRecord?.compsubtype as  "brdg" | "derived-cal" | "derived-cs" | "derived-el" | "derived-others" | "dd" | "ft" | "others" | "dh" | "ds" | "dl"));
-  // const [sqlText, setSqlText] = useState(selectedRecord?.sqltext?.[0] || "");
+  const [sqlText, setSqlText] = useState(selectedRecord?.sqltext?.[0] || "");
   // const [processType, setProcessType] = useState<"app" | "ow">(
   //   (selectedRecord?.processtype as "app" | "ow") || "app"
   // );
-  // const [comments, setComments] = useState(selectedRecord?.comments || "");
+  const [comments, setComments] = useState(selectedRecord?.comments || "");
   const [version, setVersion] = useState(selectedRecord?.version || 1);
 
   // Get unique project names from datasets
-  // const projects = useAppSelector(state => state.project.projectAssigns.filter(pa => pa.useremail == state.user.currentUser.useremail && pa.is_active).map(pa => pa.projectshortname));
-  // const uniqueProjects = Array.from(new Set(projects))
+  const projects = useAppSelector(state => state.project.projectAssigns.filter(pa => pa.useremail == state.user.currentUser.useremail && pa.is_active).map(pa => pa.projectshortname));
+  const uniqueProjects = Array.from(new Set(projects))
 
   const isFormValid = () => {
     return (
-      // selectedProject !== '' &&
-      // componentName !== '' &&
-      // sqlText !== ''
-      true
+      selectedProject !== '' &&
+      componentName !== '' &&
+      sqlText !== ''
     );
   };
 
@@ -67,9 +66,12 @@ export function Sg2Form({
 
     try {
       const payload: DvCompSg2 = {
+        projectshortname: selectedProject,
         comptype: componentType,
+        compname: componentName,
         compsubtype: componentSubtype,
-        version
+        sqltext: sqlText,
+        comments,
       };
 
       // await toast.promise(
@@ -107,19 +109,25 @@ export function Sg2Form({
   };
 
 
+  // useEffect(() => {
+  //   setIsValidated(false);
+  // }, [
+  //   componentType,
+  //   componentSubtype,
+  // ]);
+
   useEffect(() => {
-    setIsValidated(false);
-  }, [
-    componentType,
-    componentSubtype,
-  ]);
+    console.log("ComponentSubType changed",componentSubtype);
+  },[componentSubtype]);
 
   useEffect(() => {
     if (componentType == 'bv') {
-      setComponentSubtype('pt');
+      setComponentSubtype('brdg');
     } else if (componentType == 'im') {
       setComponentSubtype('dd');
-    } else {
+    } else if (componentType == 'dv') {
+      setComponentSubtype('dh');
+    }else {
       setComponentSubtype('others');
     }
 
@@ -132,15 +140,20 @@ export function Sg2Form({
 
     try {
       const payload: DvCompSg2 = {
+        projectshortname: selectedProject,
         comptype: componentType,
+        compname: componentName,
         compsubtype: componentSubtype,
+        sqltext: sqlText,
+        comments,
+        compshortname: `${selectedProject}-${componentType}-${componentSubtype}-${componentName}-${version}`,
         version
       };
 
       if (isUpdate) {
         // Update mode
         await dispatch(updateDvCompSg2Async({
-          rdvid: selectedRecord?.rdvid || 0,
+          rdvid: selectedRecord?.dvid || 0,
           dvcompsg2Data: payload
         })).unwrap();
         toast.success("SG 2 configuration updated successfully");
@@ -165,7 +178,7 @@ export function Sg2Form({
         {isUpdate ? 'Update' : 'Create'} SG 2 Configuration
       </h2>
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* <div>
+        <div>
           <label
             htmlFor="project"
             className="block text-sm font-medium text-gray-700"
@@ -186,7 +199,7 @@ export function Sg2Form({
               </option>
             ))}
           </select>
-        </div> */}
+        </div>
 
         <div>
           <label
@@ -209,7 +222,7 @@ export function Sg2Form({
           </select>
         </div>
 
-        {/* <div>
+        <div>
           <label
             htmlFor="componentName"
             className="block text-sm font-medium text-gray-700"
@@ -224,7 +237,7 @@ export function Sg2Form({
             className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
             required
           />
-        </div> */}
+        </div>
 
         <div>
           <label
@@ -236,7 +249,7 @@ export function Sg2Form({
           <select
             id="componentSubtype"
             value={componentSubtype}
-            onChange={(e) => setComponentSubtype(e.target.value as any)}
+            onChange={(e) => {console.log(e.target.value);setComponentSubtype(e.target.value as "brdg" | "derived-cal" | "derived-cs" | "derived-el" | "derived-others" | "dd" | "ft" | "others" | "dh" | "ds" | "dl")}}
             className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
             required
           >
@@ -264,7 +277,7 @@ export function Sg2Form({
           </select>
         </div>
 
-        {/* <div>
+        <div>
           <label
             htmlFor="sqlText"
             className="block text-sm font-medium text-gray-700"
@@ -279,9 +292,9 @@ export function Sg2Form({
             className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
             required
           />
-        </div> */}
+        </div>
 
-        {/* <div>
+        <div>
           <label
             htmlFor="comment"
             className="block text-sm font-medium text-gray-700"
@@ -296,7 +309,7 @@ export function Sg2Form({
             className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
             required
           />
-        </div> */}
+        </div>
 
         <div>
         <label htmlFor="version" className="block text-sm font-medium text-gray-700">

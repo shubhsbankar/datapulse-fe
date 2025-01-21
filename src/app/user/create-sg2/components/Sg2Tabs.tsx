@@ -37,7 +37,7 @@ export function Sg2Tabs({
             DS Records
           </TabsTrigger>
           <TabsTrigger value="sgs" className="text-center h-auto whitespace-normal">
-            Create SG Records
+            Create SG2 Records
           </TabsTrigger>
         </TabsList>
 

@@ -37,27 +37,27 @@ interface Sg2TableProps {
 // -- );
 
 export enum Sg2Columns {
-  // rdvid = 'rdvid',
-  // projectshortname = 'projectshortname',
+  dvid = 'dvid',
+  projectshortname = 'projectshortname',
   // dpname = 'dpname',
   // dsname = 'dsname',
   // comptype = 'comptype',
-  // compname = 'compname',
+  compname = 'compname',
   // compsubtype = 'compsubtype',
-  // sqltext = 'sqltext',
+  sqltext = 'sqltext',
   // tenantid = 'tenantid',
   // bkcarea = 'bkcarea',
   // createdate = 'createdate',
-  // compshortname = 'compshortname',
-  // user_email = 'user_email',
-  // comments = 'comments',
+  compshortname = 'compshortname',
+  user_email = 'user_email',
+  comments = 'comments',
   // version = 'version',
   // processtype = 'processtype',
   // datefieldname = 'datefieldname',
   // // actions = 'Actions',
   // partsnum = 'partsnum',
   // parts = 'parts',
-  rdvid = 'rdvid',
+  // rdvid = 'rdvid',
   comptype = 'comptype',
   compsubtype = 'compsubtype',
   createdate = 'createdate',
@@ -202,7 +202,7 @@ export function Sg2Table({ sgs }: Sg2TableProps) {
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {paginatedSgs?.map((sg) => (
-              <tr key={sg.rdvid}>
+              <tr key={sg.dvid}>
                 {Object.values(Sg2Columns).map(column => (
                   visibleColumns.has(column) && (
                     <td key={column} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">

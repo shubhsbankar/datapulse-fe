@@ -6,7 +6,7 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { getAllDatasetsAsync } from '@/store/userfeat/datasetThunks';
 import { getAllDvCompSg1sAsync, updateDvCompSg1Async } from '@/store/userfeat/dvcompsg1Thunks';
 import { toast } from 'react-hot-toast';
-import { SgForm } from '../../components/Sg2Form';
+import { Sg2Form } from '../../components/Sg2Form';
 
 export default function EditSgPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
@@ -76,7 +76,7 @@ export default function EditSgPage({ params }: { params: Promise<{ id: string }>
         <h1 className="text-2xl font-bold text-gray-900">Edit SG Configuration</h1>
       </div>
 
-      <SgForm
+      <Sg2Form
       setQueryResult={() => {}}
         datasets={datasets}
         selectedProject={selectedProject}

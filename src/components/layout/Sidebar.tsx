@@ -171,7 +171,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         { name: "Create BRG", href: "/user/create-brg", icon: Cog },
         { name: "Create DD", href: "/user/create-dd", icon: Cog },
         { name: "Create FT", href: "/user/create-ft", icon: Cog },
-        { name: "Create SG Copy 2", href: "/user/create-sgcopy2", icon: Cog },
+        { name: "Create SG2", href: "/user/create-sg2", icon: Cog },
       ],
     },
   ];
