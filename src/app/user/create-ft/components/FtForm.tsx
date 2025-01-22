@@ -42,6 +42,7 @@ export function FtForm({
     "type1" | "type2" 
   >((selectedRecord?.compsubtype as "type1" | "type2" ) || "type1");
   const [sqlText, setSqlText] = useState(selectedRecord?.sqltext?.[0] || "");
+  const [isValidSql, setIsValidSql] = useState(false);
 
   const [comments, setComments] = useState(selectedRecord?.comments || "");
   const [version, setVersion] = useState(selectedRecord?.version || 1);
@@ -51,17 +52,17 @@ export function FtForm({
   const projects = useAppSelector(state => state.project.projectAssigns.filter(pa => pa.useremail == state.user.currentUser.useremail && pa.is_active).map(pa => pa.projectshortname));
   const uniqueProjects = Array.from(new Set(projects))
 
- useEffect(() => {
-      const fetchDateFieldNames = async () => {
-        // if (selectedDataset) {
-          const resp = await dispatch(getTableColumnsAsync({ project: selectedProject, comptype: componentType, compname: componentName }));
-          if (resp.payload.status === 200) {
-            setAvailableDateFieldName(resp.payload.data || []);
-          }
-        // }
-      };
-      fetchDateFieldNames();
-    }, [dispatch, selectedProject, componentName]);
+//  useEffect(() => {
+//       const fetchDateFieldNames = async () => {
+//         // if (selectedDataset) {
+//           const resp = await dispatch(getTableColumnsAsync({ project: selectedProject, comptype: componentType, compname: componentName }));
+//           if (resp.payload.status === 200) {
+//             setAvailableDateFieldName(resp.payload.data || []);
+//           }
+//         // }
+//       };
+//       fetchDateFieldNames();
+//     }, [dispatch, selectedProject, componentName]);
   const isFormValid = () => {
     return (
       selectedProject !== '' &&
@@ -187,6 +188,29 @@ export function FtForm({
       toast.error(error.message || `Failed to ${selectedRecord ? 'update' : 'create'} FT configuration`);
     }
   };
+  useEffect(() => {
+    const fetchDatefields = async () => {
+      // if (selectedDataset) {
+        const resp = await dispatch(getTableColumnsAsync({ sqltext : sqlText }));
+        if (resp.payload.status === 200) {
+          setAvailableDateFieldName(resp.payload.data || []);
+        }
+      // }
+    };
+    fetchDatefields();
+  }, [sqlText, dispatch]);
+
+  const validateSqlInput = (value : string) => {
+    // Basic validation to check if the input starts with "SELECT"
+    if (/^\s*SELECT\b/i.test(value)) {
+      setIsValidSql(true); // Clear any previous error
+      // fetchBkfields()
+    } else {
+      setIsValidSql(false);
+    }
+    setSqlText(value);
+    setDateFieldName('');
+  };
 
   return (
     <div className="bg-white shadow rounded-lg p-6">
@@ -283,7 +307,8 @@ export function FtForm({
           <textarea
             id="sqlText"
             value={sqlText}
-            onChange={(e) => setSqlText(e.target.value)}
+            onChange={(e) => validateSqlInput(e.target.value)}
+            placeholder="Enter a SELECT or select SQL statement"
             rows={3}
             className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
             required

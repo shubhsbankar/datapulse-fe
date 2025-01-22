@@ -217,17 +217,19 @@ export function DdForm({
       toast.error(error.message || `Failed to ${selectedRecord ? 'update' : 'create'} DD configuration`);
     }
   };
-  const fetchBkfields = async () => {
-    // if (selectedDataset) {
-      const resp = await dispatch(getTableColumnsAsync({ sqltext : sqlText }));
-      if (resp.payload.status === 200) {
-        setAvailableBkfields(resp.payload.data || []);
-      }
-    // }
-  };
+
   useEffect(() => {
+    const fetchBkfields = async () => {
+      // if (selectedDataset) {
+        const resp = await dispatch(getTableColumnsAsync({ sqltext : sqlText }));
+        if (resp.payload.status === 200) {
+          setAvailableBkfields(resp.payload.data || []);
+        }
+      // }
+    };
     fetchBkfields();
-  }, [sqlText])
+  }, [sqlText, dispatch]);
+
   const validateSqlInput = (value : string) => {
     // Basic validation to check if the input starts with "SELECT"
     if (/^\s*SELECT\b/i.test(value)) {

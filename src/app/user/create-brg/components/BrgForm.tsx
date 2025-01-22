@@ -129,21 +129,21 @@ export function BrgForm({
     );
   };
 
-  useEffect(() => {
-    const payload = {
-      projectshortname: selectedProject,
-      comptype: componentType,
-      compname: componentName,
-    }
-    dispatch(getAllDvCompBrgColumnsAsync(payload)).unwrap()
-      .then(data => {
-        setAvailableColumns(data.data);
-      })
-      .catch(err => {
-        console.error(err);
-        toast.error('Failed to fetch available columns');
-      });
-  }, [selectedProject, componentType, componentName]);
+  // useEffect(() => {
+  //   const payload = {
+  //     projectshortname: selectedProject,
+  //     comptype: componentType,
+  //     compname: componentName,
+  //   }
+  //   dispatch(getAllDvCompBrgColumnsAsync(payload)).unwrap()
+  //     .then(data => {
+  //       setAvailableColumns(data.data);
+  //     })
+  //     .catch(err => {
+  //       console.error(err);
+  //       toast.error('Failed to fetch available columns');
+  //     });
+  // }, [selectedProject, componentType, componentName]);
 
   const handleValidate = async () => {
     if (!isFormValid()) {
@@ -197,14 +197,34 @@ export function BrgForm({
     setProcessType('');
     setDateFieldName('');
   };
-  const getColumsAndData = async (value : string) => {
-    setProcessType(value as "APP" | "OW")
-    const resp = await dispatch(getTableColumnsAsync({ sqlText }));
+  useEffect(() => {
+    const getColumsAndData = async () => {
+      try {
+        console.log("getColumsAndData called with processType: ", processType);
+  
+        // Only proceed if the process type is 'APP'
+        if (processType === "APP" && sqlText.length != 0) {
+          const resp = await dispatch(getTableColumnsAsync({ sqltext: sqlText }));
+          console.log("Response received: ", resp);
+  
           if (resp.payload.status === 200) {
             setAvailableDateFieldName(resp.payload.data || []);
+          } else {
+            console.error("Error: Failed to fetch columns, status: ", resp.payload.status);
           }
-
-  }
+        }
+      } catch (error) {
+        console.error("Error in getColumsAndData: ", error);
+      }
+    };
+  
+    // Call the async function
+    getColumsAndData();
+  
+    // Log after function execution
+    console.log("getColumsAndData effect executed: ", processType);
+  }, [processType, dispatch, sqlText]);
+ 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -338,7 +358,7 @@ export function BrgForm({
           </label>
           <select
             value={processType}
-            onChange={(e) => getColumsAndData(e.target.value)}
+            onChange={(e) => setProcessType(e.target.value as "APP" | "OW")}
             disabled= {!isValidSql}
             className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3"
             required
