@@ -32,7 +32,7 @@ export function BrgForm({
   const [componentName, setComponentName] = useState("");
   const [sqlText, setSqlText] = useState("");
   const [isValidSql, setIsValidSql] = useState(false);
-  const [processType, setProcessType] = useState<"APP" | "OW">("APP");
+  const [processType, setProcessType] = useState<"APP" | "OW" | "">("");
   // const [dateFieldName, setDateFieldName] = useState("");
   const [comments, setComments] = useState("");
   const [version, setVersion] = useState(1);
@@ -125,8 +125,7 @@ export function BrgForm({
       // processType !== "" &&
       processType !== 'OW' ? dateFieldName !== "" : true  &&
       comments !== "" &&
-      version > 0 &&
-      partsNumber == parts.length
+      version > 0 
     );
   };
 
@@ -148,11 +147,11 @@ export function BrgForm({
 
   const handleValidate = async () => {
     if (!isFormValid()) {
-      if (!/^\d{4}-\d{2}-\d{2}$/.test(dateFieldName)) {
-        toast.error('Date field name must be in yyyy-mm-dd format');
-      } else {
-        toast.error('Please fill in all required fields before validating');
-      }
+      // if (!/^\d{4}-\d{2}-\d{2}$/.test(dateFieldName)) {
+      //   toast.error('Date field name must be in yyyy-mm-dd format');
+      // } else {
+      //   toast.error('Please fill in all required fields before validating');
+      // }
       return;
     }
 
@@ -195,6 +194,8 @@ export function BrgForm({
       setIsValidSql(false);
     }
     setSqlText(value);
+    setProcessType('');
+    setDateFieldName('');
   };
   const getColumsAndData = async (value : string) => {
     setProcessType(value as "APP" | "OW")
