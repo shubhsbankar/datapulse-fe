@@ -18,7 +18,7 @@ export function SqlResults({ results }: SqlResultsProps) {
   useEffect(() => {
     setCurrentPage(1);
   }, [results]);
-
+  console.log("Query result", results);
   if (!results || results.error) {
     return (
       <div className="bg-white shadow rounded-lg p-6">

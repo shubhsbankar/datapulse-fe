@@ -31,6 +31,7 @@ export function BrgForm({
   >("pt");
   const [componentName, setComponentName] = useState("");
   const [sqlText, setSqlText] = useState("");
+  const [isValidSql, setIsValidSql] = useState(false);
   const [processType, setProcessType] = useState<"APP" | "OW">("APP");
   // const [dateFieldName, setDateFieldName] = useState("");
   const [comments, setComments] = useState("");
@@ -79,17 +80,17 @@ export function BrgForm({
   }, [selectedProject, componentType, componentName, version,componentSubtype]);
 
 
- useEffect(() => {
-      const fetchDateFieldNames = async () => {
-        // if (selectedDataset) {
-          const resp = await dispatch(getTableColumnsAsync({ project: selectedProject, comptype: componentType, compname: componentName }));
-          if (resp.payload.status === 200) {
-            setAvailableDateFieldName(resp.payload.data || []);
-          }
-        // }
-      };
-      fetchDateFieldNames();
-    }, [dispatch, selectedProject, componentName]);
+//  useEffect(() => {
+//       const fetchDateFieldNames = async () => {
+//         // if (selectedDataset) {
+//           const resp = await dispatch(getTableColumnsAsync({ project: selectedProject, comptype: componentType, compname: componentName }));
+//           if (resp.payload.status === 200) {
+//             setAvailableDateFieldName(resp.payload.data || []);
+//           }
+//         // }
+//       };
+//       fetchDateFieldNames();
+//     }, [dispatch, selectedProject, componentName]);
 
 
   // Reset dependent fields when parent selection changes
@@ -186,7 +187,23 @@ export function BrgForm({
       return false;
     }
   };
+  const validateSqlInput = (value : string) => {
+    // Basic validation to check if the input starts with "SELECT"
+    if (/^\s*SELECT\b/i.test(value)) {
+      setIsValidSql(true); // Clear any previous error
+    } else {
+      setIsValidSql(false);
+    }
+    setSqlText(value);
+  };
+  const getColumsAndData = async (value : string) => {
+    setProcessType(value as "APP" | "OW")
+    const resp = await dispatch(getTableColumnsAsync({ sqlText }));
+          if (resp.payload.status === 200) {
+            setAvailableDateFieldName(resp.payload.data || []);
+          }
 
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -303,11 +320,12 @@ export function BrgForm({
           <label className="block text-sm font-medium text-gray-700">
             SQL Text
           </label>
-          <input
-            type="text"
+          <textarea
             id="sqlText"
             value={sqlText}
-            onChange={(e) => setSqlText(e.target.value)}
+            onChange={(e) => validateSqlInput(e.target.value)}
+            rows={3}
+            placeholder="Enter a SELECT or select SQL statement"
             className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
             required
           />
@@ -319,7 +337,8 @@ export function BrgForm({
           </label>
           <select
             value={processType}
-            onChange={(e) => setProcessType(e.target.value as "APP" | "OW")}
+            onChange={(e) => getColumsAndData(e.target.value)}
+            disabled= {!isValidSql}
             className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3"
             required
           >
@@ -341,7 +360,7 @@ export function BrgForm({
             id="dateFieldName"
             value={dateFieldName}
             onChange={(e) => setDateFieldName(e.target.value)}
-            disabled={processType === 'OW'}
+            disabled={!(processType === 'APP')}
             className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
             required
           >

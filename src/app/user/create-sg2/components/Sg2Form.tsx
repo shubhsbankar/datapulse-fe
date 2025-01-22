@@ -18,7 +18,7 @@ interface Sg2FormProps {
   setSelectedProject: (project: string) => void;
   selectedRecord?: DvCompSg2; // For update mode
   isUpdate: boolean;
-  setQueryResult: (result: { headers: string[]; rows: any[][]; error: string }) => void;
+  setQueryResult: (result: { headers: string[]; rows: any[][]; error: string } | null) => void;
 }
 
 export function Sg2Form({
@@ -32,12 +32,12 @@ export function Sg2Form({
   const dispatch = useAppDispatch();
   const [isValidated, setIsValidated] = useState(false);
   const [componentName, setComponentName] = useState(selectedRecord?.compname || "");
-  const [componentType, setComponentType] = useState<"bv" | "im" | "others" | "dv">(
-    (selectedRecord?.comptype as "bv" | "im" | "others" | "dv") || "bv"
+  const [componentType, setComponentType] = useState<"bv" | "im" | "others" | "dv" | "">(
+    (selectedRecord?.comptype as "bv" | "im" | "others" | "dv" | "") || ""
   );
   const [componentSubtype, setComponentSubtype] = useState<
-    "brdg" | "derived-cal" | "derived-cs" | "derived-el" | "derived-others" | "dd" | "ft" | "others" | "dh" | "ds" | "dl"
-  >((selectedRecord?.compsubtype as  "brdg" | "derived-cal" | "derived-cs" | "derived-el" | "derived-others" | "dd" | "ft" | "others" | "dh" | "ds" | "dl"));
+    "brdg" | "derived-cal" | "derived-cs" | "derived-el" | "derived-others" | "dd" | "ft" | "others" | "dh" | "ds" | "dl" | ""
+  >((selectedRecord?.compsubtype as  "brdg" | "derived-cal" | "derived-cs" | "derived-el" | "derived-others" | "dd" | "ft" | "others" | "dh" | "ds" | "dl" | ""));
   const [sqlText, setSqlText] = useState(selectedRecord?.sqltext?.[0] || "");
   // const [processType, setProcessType] = useState<"app" | "ow">(
   //   (selectedRecord?.processtype as "app" | "ow") || "app"
@@ -92,7 +92,13 @@ export function Sg2Form({
       // );
 
       const data = await dispatch(testDvCompSg2Async(payload)).unwrap()
-      // setQueryResult(data.data);
+      if (Object.keys(data.data).length !== 0) {
+        setQueryResult(data.data);
+    }
+    else {
+      setQueryResult(null);
+    }
+      
       if (data.data.error) {
         setIsValidated(false);
         toast.error(data.data.error);
@@ -120,18 +126,18 @@ export function Sg2Form({
     console.log("ComponentSubType changed",componentSubtype);
   },[componentSubtype]);
 
-  useEffect(() => {
-    if (componentType == 'bv') {
-      setComponentSubtype('brdg');
-    } else if (componentType == 'im') {
-      setComponentSubtype('dd');
-    } else if (componentType == 'dv') {
-      setComponentSubtype('dh');
-    }else {
-      setComponentSubtype('others');
-    }
+  // useEffect(() => {
+  //   if (componentType == 'bv') {
+  //     setComponentSubtype('brdg');
+  //   } else if (componentType == 'im') {
+  //     setComponentSubtype('dd');
+  //   } else if (componentType == 'dv') {
+  //     setComponentSubtype('dh');
+  //   }else {
+  //     setComponentSubtype('others');
+  //   }
 
-  }, [componentType]);
+  // }, [componentType]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -188,7 +194,7 @@ export function Sg2Form({
           <select
             id="project"
             value={selectedProject}
-            onChange={(e) => setSelectedProject(e.target.value)}
+            onChange={(e) => {setComponentType("");setSelectedProject(e.target.value)}}
             className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
             required
           >
@@ -215,6 +221,7 @@ export function Sg2Form({
             className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
             required
           >
+            <option value="">Select Component Type</option>
             <option value="bv">BV</option>
             <option value="im">IM</option>
             <option value="dv">DV</option>
@@ -255,6 +262,7 @@ export function Sg2Form({
           >
             {componentType === "bv" ? (
               <>
+               <option value="">Select Component Subype</option>
                 <option value="brdg">BRDG</option>
                 <option value="derived-cs">Derived-CS</option>
                 <option value="derived-cal">Derived-CAL</option>
@@ -263,16 +271,21 @@ export function Sg2Form({
               </>
             ) : (componentType === "im" ? (
               <>
+               <option value="">Select Component Subtype</option>
                 <option value="dd">DD</option>
                 <option value="ft">FT</option>
               </>
             ) : (componentType === "dv" ? (
               <>
+               <option value="">Select Component Subtype</option>
                 <option value="dh">DH</option>
                 <option value="ds">DS</option>
                 <option value="dl">DL</option>
               </>
-            ) : <option value="others">Others</option>))
+            ) : (<> 
+            <option value="">Select Component Subtype</option>
+            <option value="others">Others</option>
+            </>)))
             }
           </select>
         </div>
@@ -289,6 +302,7 @@ export function Sg2Form({
             value={sqlText}
             onChange={(e) => setSqlText(e.target.value)}
             rows={3}
+            placeholder="Enter a SELECT or CREATE SQL statement"
             className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
             required
           />
