@@ -111,28 +111,54 @@ export const testDvCompBrgAsync = createAsyncThunk<any, DvCompBrg, { rejectValue
     }
 );
 
-// export const getAllDvCompBrgColumnsAsync = createAsyncThunk<any, { projectshortname: string }, { rejectValue: ErrorResponse }>(
-//     'dvcompbrg/getAllDvCompBrgColumns',
-//     async (payload, { rejectWithValue, getState }) => {
-//         try {
-//             const state = getState() as RootState;
-//             const response = await fetch(`${backendLink}/dvcompbrg/columns`, {
-//                 method: 'POST',
-//                 headers: {
-//                     'Content-Type': 'application/json',
-//                     'Authorization': `Bearer ${state.auth.token}`
-//                 },
-//                 body: JSON.stringify(payload)
-//             });
+export const getAllDvCompBrgColumnsAsync = createAsyncThunk<any, { projectshortname: string }, { rejectValue: ErrorResponse }>(
+    'dvcompbrg/getAllDvCompBrgColumns',
+    async (payload, { rejectWithValue, getState }) => {
+        try {
+            const state = getState() as RootState;
+            const response = await fetch(`${backendLink}/dvcompbrg/columns`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${state.auth.token}`
+                },
+                body: JSON.stringify(payload)
+            });
 
-//             const jsonResponse = await response.json();
-//             if (isSuccessful(jsonResponse.status)) {
-//                 return jsonResponse;
-//             }
-//             return rejectWithValue(jsonResponse as ErrorResponse);
-//         } catch (error) {
-//             const errorMessage = error instanceof Error ? error.message : 'Failed to fetch dvcompbrg columns';
-//             return rejectWithValue({ message: errorMessage });
-//         }
-//     }
-// );
+            const jsonResponse = await response.json();
+            if (isSuccessful(jsonResponse.status)) {
+                return jsonResponse;
+            }
+            return rejectWithValue(jsonResponse as ErrorResponse);
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Failed to fetch dvcompbrg columns';
+            return rejectWithValue({ message: errorMessage });
+        }
+    }
+);
+
+export const getTableColumnsAsync = createAsyncThunk<any, any, { rejectValue: ErrorResponse }>(
+    'dvcompbrg/getTableColumns',
+    async (data, { rejectWithValue, getState }) => {
+        try {
+            const state = getState() as RootState;
+            const response = await fetch(`${backendLink}/dvcompbrg/get-columns`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${state.auth.token}`
+                },
+                body: JSON.stringify(data)
+            });
+
+            const jsonResponse = await response.json();
+            if (isSuccessful(jsonResponse.status)) {
+                return jsonResponse;
+            }
+            return rejectWithValue(jsonResponse as ErrorResponse);
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Failed to get table columns';
+            return rejectWithValue({ message: errorMessage });
+        }
+    }
+);

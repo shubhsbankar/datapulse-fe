@@ -8,11 +8,11 @@ import {
   // getAllRdvCompFtColumnsAsync,
   testDvCompFtAsync,
   updateDvCompFtAsync,
+  getTableColumnsAsync
 } from "@/store/userfeat/dvcompftThunks";
 import { toast } from "react-hot-toast";
 import { cn } from "@/lib/utils";
-import {  getTableColumnsAsync
-} from "@/store/userfeat/dvcompddThunks";
+
 
 interface FtFormProps {
   datasets: Dataset[];

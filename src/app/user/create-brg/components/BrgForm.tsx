@@ -3,11 +3,9 @@
 import { DvCompBrg } from "@/types/userfeat";
 import { useState, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { createDvCompBrgAsync, getAllDvCompBrgColumnsAsync, testDvCompBrgAsync } from "@/store/userfeat/dvcompbrgThunks";
+import { createDvCompBrgAsync, testDvCompBrgAsync, getTableColumnsAsync } from "@/store/userfeat/dvcompbrgThunks";
 import { toast } from "react-hot-toast";
 import { cn } from "@/lib/utils";
-import {  getTableColumnsAsync
-} from "@/store/userfeat/dvcompddThunks";
 
 interface BrgFormProps {
   selectedProject: string;

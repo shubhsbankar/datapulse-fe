@@ -116,7 +116,7 @@ export const getTableColumnsAsync = createAsyncThunk<any, any, { rejectValue: Er
     async (data, { rejectWithValue, getState }) => {
         try {
             const state = getState() as RootState;
-            const response = await fetch(`${backendLink}/rdvcompft/get-columns`, {
+            const response = await fetch(`${backendLink}/dvcompft/get-columns`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
