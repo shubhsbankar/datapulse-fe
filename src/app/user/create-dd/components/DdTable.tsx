@@ -212,10 +212,11 @@ export function DdTable({ sgs }: DdTableProps) {
                 {Object.values(DdColumns).map(column => (
                   visibleColumns.has(column) && (
                     <td key={column} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {column === 'createdate' ? formatDate(sg[column] || '') :
-                       column === 'sqltext' ? 
-                       (Array.isArray(sg[column]) ? sg[column].join(', ') : sg[column]) :
-                       sg[column as keyof DvCompDd]}
+                       {column === DdColumns.createdate
+                        ? formatDate(sg[column] as string)
+                        :
+                        Array.isArray(sg[column]) ? (sg[column] as string[]).join(', ') :
+                        sg[column]}
                     </td>
                   )
                 ))}

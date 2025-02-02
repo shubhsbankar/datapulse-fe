@@ -221,6 +221,10 @@ export function DssForm2({
   ]);
 
   return (
+    <div className="bg-white shadow rounded-lg p-6">
+      <h2 className="text-lg font-medium text-gray-900 mb-4">
+        Define DSS Component (Form 2)
+      </h2>
     <form onSubmit={handleSubmit} className="space-y-4">
       {/* Project dropdown */}
       <div>
@@ -496,5 +500,6 @@ export function DssForm2({
         </button>
       </div>
     </form>
+    </div>
   );
 } 

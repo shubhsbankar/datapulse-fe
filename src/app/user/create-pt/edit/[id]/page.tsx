@@ -52,9 +52,9 @@ export default function EditPtPage({ params }: { params: Promise<{ id: string }>
         
         setIsLoading(false);
       } catch (error) {
-        console.error('Failed to load SG data:', error);
-        toast.error('Failed to load SG data');
-        router.push('/user/config-sg');
+        console.error('Failed to load pt data:', error);
+        toast.error('Failed to load pt data');
+        router.push('/user/config-pt');
       }
     };
 
@@ -65,10 +65,10 @@ export default function EditPtPage({ params }: { params: Promise<{ id: string }>
     return <div>Loading...</div>;
   }
 
-  // if (!pt) {
-  //   router.push('/user/config-sg');
-  //   return null;
-  // }
+  if (!pt) {
+    router.push('/user/config-pt');
+    return null;
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">

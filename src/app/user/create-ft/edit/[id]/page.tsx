@@ -4,11 +4,11 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { getAllDatasetsAsync } from '@/store/userfeat/datasetThunks';
-import { getAllDvCompSg1sAsync, updateDvCompSg1Async } from '@/store/userfeat/dvcompsg1Thunks';
+import { getAllDvCompFt1sAsync } from '@/store/userfeat/dvcompft1Thunks';
 import { toast } from 'react-hot-toast';
 import { FtForm } from '../../components/FtForm';
 
-export default function EditSgPage({ params }: { params: Promise<{ id: string }> }) {
+export default function EditFtPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const [isLoading, setIsLoading] = useState(true);
@@ -27,34 +27,34 @@ export default function EditSgPage({ params }: { params: Promise<{ id: string }>
     fetchParams();
   }, [params]);
 
-  const dvcompSg1 = useAppSelector((state) => 
-    state.userfeat.dvcompsg1
+  const dvcompft1 = useAppSelector((state) => 
+    state.userfeat.dvcompft
   );
-  const sg = dvcompSg1.find(sg => sg.rdvid === rdvid);
+  const ft = dvcompft1.find(ft => ft.dvid === rdvid);
 
   useEffect(() => {
-    if (sg) {
-      setSelectedProject(sg.projectshortname);
+    if (ft) {
+      setSelectedProject(ft.projectshortname);
     }
-  }, [sg]);
+  }, [ft]);
 
   useEffect(() => {
     const loadData = async () => {
       try {
         await Promise.all([
           dispatch(getAllDatasetsAsync()),
-          dispatch(getAllDvCompSg1sAsync())
+          dispatch(getAllDvCompFt1sAsync())
         ]);
         
-        if (sg) {
-          setSelectedProject(sg.projectshortname);
+        if (ft) {
+          setSelectedProject(ft.projectshortname);
         }
         
         setIsLoading(false);
       } catch (error) {
-        console.error('Failed to load SG data:', error);
-        toast.error('Failed to load SG data');
-        router.push('/user/config-sg');
+        console.error('Failed to load FT data:', error);
+        toast.error('Failed to load FT data');
+        router.push('/user/config-ft');
       }
     };
 
@@ -65,15 +65,15 @@ export default function EditSgPage({ params }: { params: Promise<{ id: string }>
     return <div>Loading...</div>;
   }
 
-  if (!sg) {
-    router.push('/user/config-sg');
+  if (!ft) {
+    router.push('/user/config-ft');
     return null;
   }
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Edit SG Configuration</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Edit FT Configuration</h1>
       </div>
 
       <FtForm
@@ -81,7 +81,7 @@ export default function EditSgPage({ params }: { params: Promise<{ id: string }>
         datasets={datasets}
         selectedProject={selectedProject}
         setSelectedProject={setSelectedProject}
-        selectedRecord={sg}
+        selectedRecord={ft}
         isUpdate={true}
       />
     </div>

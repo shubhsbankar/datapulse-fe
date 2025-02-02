@@ -4,11 +4,11 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { getAllDatasetsAsync } from '@/store/userfeat/datasetThunks';
-import { getAllRdvCompDdsAsync } from '@/store/userfeat/dvcompddThunks';
+import { getAllDvCompDdsAsync } from '@/store/userfeat/dvcompddThunks';
 import { toast } from 'react-hot-toast';
 import { DdForm } from '../../components/DdForm';
 
-export default function EditSgPage({ params }: { params: Promise<{ id: string }> }) {
+export default function EditDdPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const [isLoading, setIsLoading] = useState(true);
@@ -28,33 +28,33 @@ export default function EditSgPage({ params }: { params: Promise<{ id: string }>
   }, [params]);
 
   const rdvcompdd = useAppSelector((state) => 
-    state.userfeat.rdvcompdd
+    state.userfeat.dvcompdd
   );
-  const sg = rdvcompdd.find(sg => sg.rdvid === rdvid);
+  const dd = rdvcompdd.find(dd => dd.dvid === rdvid);
 
   useEffect(() => {
-    if (sg) {
-      setSelectedProject(sg.projectshortname);
+    if (dd) {
+      setSelectedProject(dd.projectshortname);
     }
-  }, [sg]);
+  }, [dd]);
 
   useEffect(() => {
     const loadData = async () => {
       try {
         await Promise.all([
           dispatch(getAllDatasetsAsync()),
-          dispatch(getAllRdvCompDdsAsync())
+          dispatch(getAllDvCompDdsAsync())
         ]);
         
-        if (sg) {
-          setSelectedProject(sg.projectshortname);
+        if (dd) {
+          setSelectedProject(dd.projectshortname);
         }
         
         setIsLoading(false);
       } catch (error) {
-        console.error('Failed to load SG data:', error);
-        toast.error('Failed to load SG data');
-        router.push('/user/config-sg');
+        console.error('Failed to load DD data:', error);
+        toast.error('Failed to load DD data');
+        router.push('/user/config-dd');
       }
     };
 
@@ -65,15 +65,15 @@ export default function EditSgPage({ params }: { params: Promise<{ id: string }>
     return <div>Loading...</div>;
   }
 
-  if (!sg) {
-    router.push('/user/config-sg');
+  if (!dd) {
+    router.push('/user/config-dd');
     return null;
   }
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Edit SG Configuration</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Edit DD Configuration</h1>
       </div>
 
       <DdForm
@@ -81,7 +81,7 @@ export default function EditSgPage({ params }: { params: Promise<{ id: string }>
         datasets={datasets}
         selectedProject={selectedProject}
         setSelectedProject={setSelectedProject}
-        selectedRecord={sg}
+        selectedRecord={dd}
         isUpdate={true}
       />
     </div>

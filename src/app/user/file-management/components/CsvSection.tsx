@@ -48,7 +48,7 @@ export function CsvSection({ selectedProject, setSelectedProject }: CsvSectionPr
       Array.from(files).forEach(file => {
         formData.append('files', file);
       });
-
+      formData.append('tablename', tableName);
       const uploadResponse = await fetch('/api/file-management/csv/upload', {
         method: 'POST',
         body: formData,

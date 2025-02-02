@@ -3,6 +3,10 @@ export interface ProjectBase {
   projectname: string;
   coname: string;
   datastoreshortname: string;
+  sourcetype: 'GCS' | 'AWS S3' | 'Local';
+  credentials_file?: string;  // Optional for AWS
+  accesskey?: string;        // Optional for GCS
+  secretkey?: string;        // Optional for GCS
 }
 
 export interface ProjectAssignBase {

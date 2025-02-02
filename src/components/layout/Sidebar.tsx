@@ -111,6 +111,11 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           href: "/user/define-cds",
           icon: GitBranch,
         },
+        {
+          name: "Define Landing Dataset",
+          href: "/user/define-lds",
+          icon: Layers,
+        },
       ],
     },
     {

@@ -342,3 +342,16 @@ export interface Dataset extends DatasetBase {
   useremailid?: string;
   datasettype?: string;
 }
+
+export interface LandingDataset {
+  dlid?: number;
+  projectshortname: string;
+  srcdataproductshortname: string;
+  srcdatasetshortname: string;
+  lnddataproductshortname: string;
+  lnddatasetshortname: string;
+  lnddsshortname: string;
+  createdate?: string;
+  useremailid?: string;
+  comments?: string;
+}

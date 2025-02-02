@@ -17,11 +17,16 @@ export default function ProjectsPage() {
   const currentUserGroup = useAppSelector((state) => state.user.currentUser.useremail?.split('@')[1]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isTarget, setIsTarget] = useState('na');
+  const [sourceType, setSourceType] = useState<'GCS' | 'AWSS3' | 'Local'>('Local');
   const [newProject, setNewProject] = useState<ProjectBase>({
     projectshortname: '',
     projectname: '',
     coname: currentUserGroup || '',
     datastoreshortname: 'NA',
+    sourcetype: 'Local',
+    credentials_file: '',  // for GCS
+    accesskey: '',        // for AWS
+    secretkey: '',        // for AWS
   });
   const [page, setPage] = useState(1);
 
@@ -181,6 +186,87 @@ export default function ProjectsPage() {
                 Datastore to associate with the project
               </p>
             </div>
+            <div>
+              <label htmlFor="sourcetype" className="block text-sm font-medium text-gray-700">
+                Source Type
+              </label>
+              <select
+                id="sourcetype"
+                value={newProject.sourcetype}
+                onChange={(e) => {
+                  const value = e.target.value as 'GCS' | 'AWSS3' | 'Local';
+                  setSourceType(value);
+                  setNewProject(prev => ({
+                    ...prev,
+                    sourcetype: value,
+                    // Reset credentials when switching source type
+                    credentialsfile: '',
+                    accesskey: '',
+                    secretkey: '',
+                  }));
+                }}
+                className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
+                required
+              >
+                <option value="Local">Local</option>
+                <option value="GCS">Google Cloud Storage</option>
+                <option value="AWSS3">AWS S3</option> 
+              </select>
+            </div>
+            {sourceType === 'GCS' && (
+              <div>
+                <label htmlFor="credentialsfile" className="block text-sm font-medium text-gray-700">
+                  Credentials File Name
+                </label>
+                <input
+                  type="text"
+                  id="credentialsfile"
+                  value={newProject.credentials_file}
+                  onChange={(e) => setNewProject(prev => ({
+                    ...prev,
+                    credentials_file: e.target.value
+                  }))}
+                  className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
+                  required
+                />
+              </div>
+            )}
+            {sourceType === 'AWSS3' && (
+              <>
+                <div>
+                  <label htmlFor="accesskey" className="block text-sm font-medium text-gray-700">
+                    Access Key
+                  </label>
+                  <input
+                    type="text"
+                    id="accesskey"
+                    value={newProject.accesskey}
+                    onChange={(e) => setNewProject(prev => ({
+                      ...prev,
+                      accesskey: e.target.value
+                    }))}
+                    className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
+                    required
+                  />
+                </div>
+                <div>
+                  <label htmlFor="secretkey" className="block text-sm font-medium text-gray-700">
+                    Secret Key
+                  </label>
+                  <input
+                    type="password"
+                    id="secretkey"
+                    value={newProject.secretkey}
+                    onChange={(e) => setNewProject(prev => ({
+                      ...prev,
+                      secretkey: e.target.value
+                    }))}
+                    className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
+                    required
+                  />
+                </div>
+              </>
+            )}
           </div>
           <div className="flex justify-end">
             <button

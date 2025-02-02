@@ -36,7 +36,7 @@ export default function DefineDatasetPage() {
 
   // Get data from Redux store
   const datastores = useAppSelector((state) => 
-    state.datastore.datastores.filter(ds => ds.is_valid)
+    state.datastore.datastores.filter(ds => ds.dstype === 'postgresql' || ds.dstype === 'csv' && ds.is_valid)
   );
   const datasets = useAppSelector((state) => state.userfeat.dataset);
 

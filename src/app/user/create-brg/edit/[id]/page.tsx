@@ -9,7 +9,7 @@ import { toast } from 'react-hot-toast';
 import { BrgForm } from '../../components/BrgForm';
 import { DvCompBrg } from '@/types/userfeat';
 
-export default function EditSgPage({ params }: { params: Promise<{ id: string }> }) {
+export default function EditBrgPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const [isLoading, setIsLoading] = useState(true);
@@ -31,13 +31,13 @@ export default function EditSgPage({ params }: { params: Promise<{ id: string }>
   const dvcompBrg = useAppSelector((state) => 
     state.userfeat.dvcompbrg
   );
-  const sg= dvcompBrg.find(sg => sg.dvid === rdvid);
+  const brg= dvcompBrg.find(brg => brg.dvid === rdvid);
 
   useEffect(() => {
-    if (sg) {
-      setSelectedProject(sg.projectshortname);
+    if (brg) {
+      setSelectedProject(brg.projectshortname);
     }
-  }, [sg]);
+  }, [brg]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -47,15 +47,15 @@ export default function EditSgPage({ params }: { params: Promise<{ id: string }>
           dispatch(getAllDvCompBrgsAsync())
         ]);
         
-        if (sg) {
-          setSelectedProject(sg.projectshortname);
+        if (brg) {
+          setSelectedProject(brg.projectshortname);
         }
         
         setIsLoading(false);
       } catch (error) {
-        console.error('Failed to load SG data:', error);
-        toast.error('Failed to load SG data');
-        router.push('/user/config-sg');
+        console.error('Failed to load brg data:', error);
+        toast.error('Failed to load brg data');
+        router.push('/user/config-brg');
       }
     };
 
@@ -66,15 +66,15 @@ export default function EditSgPage({ params }: { params: Promise<{ id: string }>
     return <div>Loading...</div>;
   }
 
-  // if (!sg) {
-  //   router.push('/user/config-sg');
+  // if (!brg) {
+  //   router.push('/user/config-brg');
   //   return null;
   // }
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Edit SG Configuration</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Edit brg Configuration</h1>
       </div>
 
       <BrgForm
@@ -82,7 +82,7 @@ export default function EditSgPage({ params }: { params: Promise<{ id: string }>
         // datasets={datasets}
         selectedProject={selectedProject}
         setSelectedProject={setSelectedProject}
-        selectedRecord={sg}
+        selectedRecord={brg}
         isUpdate={true}
       />
     </div>

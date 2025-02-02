@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { getAllDatasetsAsync } from '@/store/userfeat/datasetThunks';
-import { getAllDvCompSg1sAsync, updateDvCompSg1Async } from '@/store/userfeat/dvcompsg1Thunks';
+import { getAllDvCompSg2sAsync } from '@/store/userfeat/dvcompsg2Thunks';
 import { toast } from 'react-hot-toast';
 import { Sg2Form } from '../../components/Sg2Form';
 
@@ -27,10 +27,10 @@ export default function EditSgPage({ params }: { params: Promise<{ id: string }>
     fetchParams();
   }, [params]);
 
-  const dvcompSg1 = useAppSelector((state) => 
-    state.userfeat.dvcompsg1
+  const dvcompsg2 = useAppSelector((state) => 
+    state.userfeat.dvcompsg2
   );
-  const sg = dvcompSg1.find(sg => sg.rdvid === rdvid);
+  const sg = dvcompsg2.find(sg => sg.dvid === rdvid);
 
   useEffect(() => {
     if (sg) {
@@ -43,7 +43,7 @@ export default function EditSgPage({ params }: { params: Promise<{ id: string }>
       try {
         await Promise.all([
           dispatch(getAllDatasetsAsync()),
-          dispatch(getAllDvCompSg1sAsync())
+          dispatch(getAllDvCompsg2sAsync())
         ]);
         
         if (sg) {
@@ -52,9 +52,9 @@ export default function EditSgPage({ params }: { params: Promise<{ id: string }>
         
         setIsLoading(false);
       } catch (error) {
-        console.error('Failed to load SG data:', error);
-        toast.error('Failed to load SG data');
-        router.push('/user/config-sg');
+        console.error('Failed to load SG2 data:', error);
+        toast.error('Failed to load SG2 data');
+        router.push('/user/config-sg2');
       }
     };
 
@@ -66,7 +66,7 @@ export default function EditSgPage({ params }: { params: Promise<{ id: string }>
   }
 
   if (!sg) {
-    router.push('/user/config-sg');
+    router.push('/user/config-sg2');
     return null;
   }
 
