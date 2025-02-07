@@ -37,18 +37,14 @@ export function LandingDatasetsTable({
   filterCSV1 = false
 }: LandingDatasetsTableProps) {
   const router = useRouter();
-  let datasets = useAppSelector(state => state.userfeat.lnddataset);
+  let datasets = useAppSelector(state => state.userfeat.lnddataset) || [];
   const { projectAssigns } = useAppSelector(state => state.project);
+  
   function isProjectActive(project: string) {
-    return projectAssigns.some(assign => assign.projectshortname === project && assign.is_active);
+    return projectAssigns?.some(assign => assign?.projectshortname === project && assign?.is_active) || false;
   }
-  datasets = datasets.filter(ds => isProjectActive(ds.projectshortname));
-  // if (isCDS) {
-  //   datasets = datasets.filter(ds => ds.datastoreshortname === 'CSV1');
-  // }
-  // if (filterCSV1) {
-  //   datasets = datasets.filter(ds => ds.datastoreshortname !== 'CSV1');
-  // }
+  
+  datasets = datasets.filter(ds => isProjectActive(ds?.projectshortname));
 
   // Move state management into the component
   const [searchTerm, setSearchTerm] = useState('');
@@ -65,33 +61,27 @@ export function LandingDatasetsTable({
 
 
   // Get unique values for filters
-  const uniqueProjects = Array.from(new Set(datasets.map(d => d.projectshortname))).filter(isProjectActive);
+  const uniqueProjects = Array.from(new Set(datasets.map(d => d?.projectshortname))).filter(isProjectActive);
   const uniqueDataProducts = Array.from(new Set(datasets.filter(ds => {
     if (selectedProject) {
-      return ds.projectshortname === selectedProject;
+      return ds?.projectshortname === selectedProject;
     }
     return true;
-  }).map(d => d.srcdataproductshortname)))
-  const datastores = useAppSelector(state => state.datastore.datastores);
+  }).map(d => d?.srcdataproductshortname)));
+  const datastores = useAppSelector(state => state.datastore.datastores) || [];
 
   // Filter and pagination logic
   const getFilteredAndPaginatedItems = () => {
     const filtered = datasets.filter(item => {
-      const matchesSearch = Object.values(item).some(value =>
-        String(value).toLowerCase().includes(searchTerm.toLowerCase())
+      const matchesSearch = Object.values(item || {}).some(value =>
+        String(value || '').toLowerCase().includes(searchTerm?.toLowerCase() || '')
       );
 
       const matchesDateRange = (!startDate || !endDate) ? true :
-        new Date(item.createdate || '') >= new Date(startDate) &&
-        new Date(item.createdate || '') <= new Date(endDate);
+        new Date(item?.createdate || '') >= new Date(startDate) &&
+        new Date(item?.createdate || '') <= new Date(endDate);
 
-      // const matchesDsType = !selectedDsType || item.dsdatatype === selectedDsType;
-      // const matchesProject = !selectedProject || item.projectshortname === selectedProject;
-      // const matchesDataProduct = !selectedDataProduct || item.dataproductshortname === selectedDataProduct;
-
- 
-      return matchesSearch && matchesDateRange /*&& matchesDsType &&
-        matchesProject && matchesDataProduct*/;
+      return matchesSearch && matchesDateRange;
     });
 
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
