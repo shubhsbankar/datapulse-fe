@@ -42,7 +42,7 @@ export function LandingDatasetsTabs({
 }: LandingDatasetsTabsProps) {
   // Get data from Redux store
   const projectAssignments = useAppSelector((state) => 
-    state.project.projectAssigns.filter(pa => 
+    state.project.projectAssigns?.filter(pa => 
       pa.useremail === state.user.currentUser?.useremail && pa.is_active
     )
   );
@@ -61,10 +61,12 @@ export function LandingDatasetsTabs({
   const [searchTerm, setSearchTerm] = useState('');
 
   // Filter and pagination logic
-  const getFilteredAndPaginatedItems = <T extends ProjectAssign | LandingDataset>(items: T[]) => {
+  const getFilteredAndPaginatedItems = <T extends ProjectAssign | LandingDataset>(items: T[] | undefined) => {
+    if (!items) return { items: [], totalItems: 0, totalPages: 0 };
+
     const filtered = items.filter(item => 
       Object.values(item).some(value => 
-        String(value).toLowerCase().includes(searchTerm.toLowerCase())
+        String(value || '').toLowerCase().includes(searchTerm.toLowerCase())
       )
     );
 
@@ -129,7 +131,7 @@ export function LandingDatasetsTabs({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => onExport(filteredProjectAssignments.items, 'projects')}
+              onClick={() => onExport(filteredProjectAssignments?.items, 'projects')}
             >
               <Download className="h-4 w-4 mr-2" />
               Export CSV
@@ -152,17 +154,17 @@ export function LandingDatasetsTabs({
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filteredProjectAssignments.items.map((pa) => (
+                {filteredProjectAssignments?.items?.map((pa) => (
                   <tr key={pa.assignid}>
                     {Array.from(visibleProjectColumns).map((column) => (
                       <td
                         key={`${pa.assignid}-${column}`}
                         className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
                       >
-                        {column === ProjectColumn.ProjectShortName && pa.projectshortname}
-                        {column === ProjectColumn.Status && (pa.is_active ? 'Active' : 'Inactive')}
-                        {column === ProjectColumn.AssignedBy && pa.who_added}
-                        {column === ProjectColumn.DateAssigned && formatDate(pa.createdate)}
+                        {column === ProjectColumn.ProjectShortName && pa?.projectshortname}
+                        {column === ProjectColumn.Status && (pa?.is_active ? 'Active' : 'Inactive')}
+                        {column === ProjectColumn.AssignedBy && pa?.who_added}
+                        {column === ProjectColumn.DateAssigned && formatDate(pa?.createdate)}
                       </td>
                     ))}
                   </tr>
@@ -175,8 +177,8 @@ export function LandingDatasetsTabs({
           <div className="mt-4 flex items-center justify-between">
             <div className="text-sm text-gray-700">
               Showing {((currentPage - 1) * ITEMS_PER_PAGE) + 1} to{' '}
-              {Math.min(currentPage * ITEMS_PER_PAGE, filteredProjectAssignments.totalItems)} of{' '}
-              {filteredProjectAssignments.totalItems} results
+              {Math.min(currentPage * ITEMS_PER_PAGE, filteredProjectAssignments?.totalItems || 0)} of{' '}
+              {filteredProjectAssignments?.totalItems || 0} results
             </div>
             <div className="flex items-center space-x-2">
               <Button
@@ -188,13 +190,13 @@ export function LandingDatasetsTabs({
                 <ChevronLeft className="h-4 w-4" />
               </Button>
               <span className="text-sm text-gray-700">
-                Page {currentPage} of {filteredProjectAssignments.totalPages}
+                Page {currentPage} of {filteredProjectAssignments?.totalPages}
               </span>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setCurrentPage(Math.min(filteredProjectAssignments.totalPages, currentPage + 1))}
-                disabled={currentPage === filteredProjectAssignments.totalPages}
+                onClick={() => setCurrentPage(Math.min(filteredProjectAssignments?.totalPages, currentPage + 1))}
+                disabled={currentPage === filteredProjectAssignments?.totalPages}
               >
                 <ChevronRight className="h-4 w-4" />
               </Button>
@@ -237,7 +239,7 @@ export function LandingDatasetsTabs({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => onExport(filteredLandingDatasets.items, 'datastores')}
+              onClick={() => onExport(filteredLandingDatasets?.items, 'datastores')}
             >
               <Download className="h-4 w-4 mr-2" />
               Export CSV
@@ -260,7 +262,7 @@ export function LandingDatasetsTabs({
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filteredLandingDatasets.items.map((ds) => (
+                {filteredLandingDatasets?.items?.map((ds) => (
                   <tr key={ds.dlid}>
                     {Array.from(visibleLndDatasetColumns).map((column) => (
                       <td
@@ -271,7 +273,7 @@ export function LandingDatasetsTabs({
                           ? formatDate(ds[column] || '')
                           : column === LandingDatasetColumn.UserEmailId
                           ? ds[column] ? 'Valid' : 'Invalid'
-                          : ds[column as keyof LandingDataset]}
+                          : ds[column as keyof LandingDataset] || ''}
                       </td>
                     ))}
                   </tr>
@@ -284,8 +286,8 @@ export function LandingDatasetsTabs({
           <div className="mt-4 flex items-center justify-between">
             <div className="text-sm text-gray-700">
               Showing {((currentPage - 1) * ITEMS_PER_PAGE) + 1} to{' '}
-              {Math.min(currentPage * ITEMS_PER_PAGE, filteredLandingDatasets.totalItems)} of{' '}
-              {filteredLandingDatasets.totalItems} results
+              {Math.min(currentPage * ITEMS_PER_PAGE, filteredLandingDatasets?.totalItems)} of{' '}
+              {filteredLandingDatasets?.totalItems} results
             </div>
             <div className="flex items-center space-x-2">
               <Button
@@ -297,13 +299,13 @@ export function LandingDatasetsTabs({
                 <ChevronLeft className="h-4 w-4" />
               </Button>
               <span className="text-sm text-gray-700">
-                Page {currentPage} of {filteredLandingDatasets.totalPages}
+                Page {currentPage} of {filteredLandingDatasets?.totalPages}
               </span>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setCurrentPage(Math.min(filteredLandingDatasets.totalPages, currentPage + 1))}
-                disabled={currentPage === filteredLandingDatasets.totalPages}
+                onClick={() => setCurrentPage(Math.min(filteredLandingDatasets?.totalPages, currentPage + 1))}
+                disabled={currentPage === filteredLandingDatasets?.totalPages}
               >
                 <ChevronRight className="h-4 w-4" />
               </Button>
