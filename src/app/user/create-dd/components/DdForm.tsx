@@ -98,7 +98,8 @@ export function DdForm({
         compsubtype: componentSubtype,
         sqltext: sqlText,
         comments,
-        bkfields: selectedBkfields
+        bkfields: selectedBkfields,
+        datefieldname: dateFieldName
       };
 
       // await toast.promise(
