@@ -73,7 +73,7 @@ export function BrgForm({
   // Update compshortname whenever relevant fields change
   useEffect(() => {
     if (selectedProject && componentType && componentName && version) {
-      setCompshortname(`${selectedProject}_${componentType}_${componentSubtype}_${componentName}_v${version}`);
+      setCompshortname(`${selectedProject}_${componentType}_${componentSubtype}_${componentName}_${version}`.toLowerCase());
     }
   }, [selectedProject, componentType, componentName, version,componentSubtype]);
 
