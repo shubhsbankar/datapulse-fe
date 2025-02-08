@@ -30,6 +30,10 @@ export default function ProjectsPage() {
   });
   const [page, setPage] = useState(1);
 
+  useEffect(() => { 
+    
+  }, []);
+
   useEffect(() => {
     if (isTarget === 'na') {
       setNewProject((prev) => ({
@@ -46,13 +50,28 @@ export default function ProjectsPage() {
   const handleCreateProject = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      toast.promise(dispatch(createProjectAsync(newProject)).unwrap(), {
+      await toast.promise(dispatch(createProjectAsync(newProject)).unwrap(), {
         loading: 'Creating project...',
         success: 'Project created successfully',
         error: (error) => {
           return error.message || 'Failed to create project';
         }
       });
+      
+      // Reset form fields
+      setNewProject({
+        projectshortname: '',
+        projectname: '',
+        coname: currentUserGroup || '',
+        datastoreshortname: 'NA',
+        sourcetype: 'Local',
+        credentials_file: '',
+        accesskey: '',
+        secretkey: '',
+      });
+      setSourceType('Local');
+      setIsTarget('na');
+      
       dispatch(getAllProjectsAsync()); // Refresh the list
     } catch (error) {
       toast.error('Failed to create project');
@@ -254,7 +273,7 @@ export default function ProjectsPage() {
                     Secret Key
                   </label>
                   <input
-                    type="password"
+                    type="text"
                     id="secretkey"
                     value={newProject.secretkey}
                     onChange={(e) => setNewProject(prev => ({

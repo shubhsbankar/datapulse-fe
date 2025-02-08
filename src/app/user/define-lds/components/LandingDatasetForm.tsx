@@ -76,6 +76,38 @@ export function LandingDatasetForm({
       .map((p) => p.projectshortname)
   );
 
+  const srcdataproductNames = useAppSelector((state) =>
+    Array.from(new Set(
+      state.userfeat.dataset
+        .filter((p) => p.projectshortname === dataset.projectshortname && (p.csvname === '' || p.csvname === null || p.csvname === undefined))
+        .map((p) => p.dataproductshortname)
+    ))
+  );
+
+  const srcdatasetNames = useAppSelector((state) =>
+    Array.from(new Set(
+      state.userfeat.dataset
+        .filter((p) => p.projectshortname === dataset.projectshortname && (p.csvname === '' || p.csvname === null || p.csvname === undefined))
+        .map((p) => p.datasetshortname)
+    ))
+  );
+
+  const lnddataproductNames = useAppSelector((state) =>
+    Array.from(new Set(
+      state.userfeat.dataset
+        .filter((p) => p.projectshortname === dataset.projectshortname && p.csvname !== '')
+        .map((p) => p.dataproductshortname)
+    ))
+  );
+
+  const lnddatasetNames = useAppSelector((state) =>
+    Array.from(new Set(
+      state.userfeat.dataset
+        .filter((p) => p.projectshortname === dataset.projectshortname && p.csvname !== '')
+        .map((p) => p.datasetshortname)
+    ))
+  );
+
   const isFormValid = () => {
     const requiredFields = [
       "projectshortname",
@@ -95,7 +127,8 @@ export function LandingDatasetForm({
       <h2 className="text-lg font-medium text-gray-900 mb-4">Create New LDS</h2>
       <form
         onSubmit={onSubmit}
-        className="space-y-4 grid grid-cols-2 gap-4"
+        //className="space-y-4 grid grid-cols-2 gap-4"
+        className="space-y-4 flex flex-col gap-4"
       >
         {/* Basic fields similar to DatasetForm */}
         <div>
@@ -128,14 +161,28 @@ export function LandingDatasetForm({
           >
             Source Data Product Name
           </label>
-          <input
+          {/* <input
             type="text"
             id="srcdataproductshortname"
             name="srcdataproductshortname"
             value={dataset.srcdataproductshortname || ''}
             onChange={onInputChange}
             className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
-          />
+          /> */}
+          <select
+            id="srcdataproductshortname"
+            name="srcdataproductshortname"
+            value={dataset.srcdataproductshortname || ''}
+            onChange={onInputChange}
+            className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
+          >
+            <option value="">Select Source Data Product</option>
+            {srcdataproductNames.map((name) => (
+              <option key={name} value={name}>
+                {name}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div>
@@ -145,14 +192,28 @@ export function LandingDatasetForm({
           >
             Source Dataset Name
           </label>
-          <input
+          {/* <input
             type="text"
             id="srcdatasetshortname"
             name="srcdatasetshortname"
             value={dataset.srcdatasetshortname || ''}
             onChange={onInputChange}
             className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
-          />
+          /> */}
+          <select
+            id="srcdatasetshortname"
+            name="srcdatasetshortname"
+            value={dataset.srcdatasetshortname || ''}
+            onChange={onInputChange}
+            className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
+          >
+            <option value="">Select Source Dataset</option>
+            {srcdatasetNames.map((name) => (
+              <option key={name} value={name}>
+                {name}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div>
@@ -162,14 +223,28 @@ export function LandingDatasetForm({
           >
             Landing Data Product Name
           </label>
-          <input
+          {/* <input
             type="text"
             id="lnddataproductshortname"
             name="lnddataproductshortname"
             value={dataset.lnddataproductshortname || ''}
             onChange={onInputChange}
             className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
-          />
+          /> */}
+          <select
+            id="lnddataproductshortname"
+            name="lnddataproductshortname"
+            value={dataset.lnddataproductshortname || ''}
+            onChange={onInputChange}
+            className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
+          >
+            <option value="">Select Landing Data Product</option>
+            {lnddataproductNames.map((name) => (
+              <option key={name} value={name}>
+                {name}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div>
@@ -179,14 +254,28 @@ export function LandingDatasetForm({
           >
             Landing Dataset Name
           </label>
-          <input
+          {/* <input
             type="text"
             id="lnddatasetshortname"
             name="lnddatasetshortname"
             value={dataset.lnddatasetshortname || ''}
             onChange={onInputChange}
             className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
-          />
+          /> */}
+          <select
+            id="lnddatasetshortname"
+            name="lnddatasetshortname"
+            value={dataset.lnddatasetshortname || ''}
+            onChange={onInputChange}
+            className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
+          >
+            <option value="">Select Landing Dataset</option>
+            {lnddatasetNames.map((name) => (
+              <option key={name} value={name}>
+                {name}
+              </option>
+            ))}
+          </select>
         </div>
 
       {/* Comments textarea */}
