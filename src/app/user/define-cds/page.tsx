@@ -59,6 +59,12 @@ export default function DefineCsvDatasetPage() {
     state.userfeat.dataset.filter(ds => ds.datastoreshortname === 'CSV1')
   );
 
+  const projectNames = useAppSelector((state) =>
+    state.project.projectAssigns
+      .filter((p) => p.useremail === state.user.currentUser?.useremail && p.is_active)
+      .map((p) => p.projectshortname)
+  );
+
   useEffect(() => {
     dispatch(getAllDatastoresAsync());
     dispatch(getAllDatasetsAsync());
@@ -218,6 +224,7 @@ export default function DefineCsvDatasetPage() {
         <CsvTabs
           projectAssignments={filteredProjectAssignments}
           datastores={filteredDatastores}
+          projectNames={projectNames}
           visibleColumns={visibleColumns}
           setVisibleColumns={setVisibleColumns}
           onExport={exportToCSV}

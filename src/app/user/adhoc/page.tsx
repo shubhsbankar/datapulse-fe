@@ -51,7 +51,20 @@ export default function ExecuteSqlPage() {
         toast.error('Failed to execute adhoc');
       });
   }
-    
+
+  const uniqueTypes = ["Type 1", "Type 2"]
+
+  // Helper function to determine if fields are required
+  const isFieldRequired = (fieldName: string) => {
+    if (inputs.py_id === 'Type 1') {
+      return ['execution_date', 'input_1'].includes(fieldName);
+    }
+    if (inputs.py_id === 'Type 2') {
+      return true; // All fields required for Type 3
+    }
+    return false;
+  };
+
   return (
     <div className="space-y-6 mt-8">
       <form onSubmit={onSubmit} className="bg-white shadow rounded-lg p-6 space-y-6">
@@ -59,29 +72,34 @@ export default function ExecuteSqlPage() {
 
         <div>
           <label htmlFor="py_id" className="block text-sm font-medium text-gray-700">
-            Py Id
+            Type <span className="text-red-500">*</span>
           </label>
-          <input
+          <select
             id="py_id"
-            type="text"
-            max={50}
             value={inputs.py_id}
             onChange={(e) => setInputs((prev) => ({ ...prev, py_id: e.target.value }))}
+            className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
             required
-            className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm font-mono"
-          />
+          >
+            <option value="">Select Type</option>
+            {uniqueTypes.map((type) => (
+              <option key={type} value={type}>
+                {type}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div>
           <label htmlFor="execution_date" className="block text-sm font-medium text-gray-700">
-            Execution Date
+            Execution Date {isFieldRequired('execution_date') && <span className="text-red-500">*</span>}
           </label>
           <input
             id="execution_date"
             type="text"
             value={inputs.execution_date}
             onChange={(e) => setInputs((prev) => ({ ...prev, execution_date: e.target.value }))}
-            required
+            required={isFieldRequired('execution_date')}
             pattern='[0-9]{4}-[0-9]{2}-[0-9]{2}'
             className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm font-mono"
             placeholder='yyyy-mm-dd'
@@ -90,46 +108,34 @@ export default function ExecuteSqlPage() {
 
         <div>
           <label htmlFor="input_1" className="block text-sm font-medium text-gray-700">
-            Input 1
+            Input 1 {isFieldRequired('input_1') && <span className="text-red-500">*</span>}
           </label>
           <input
             id="input_1"
             type="text"
             value={inputs.input_1}
             onChange={(e) => setInputs((prev) => ({ ...prev, input_1: e.target.value }))}
+            required={isFieldRequired('input_1')}
             className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm font-mono"
           />
         </div>
 
         <div>
           <label htmlFor="input_2" className="block text-sm font-medium text-gray-700">
-            Input 2
+            Input 2 {isFieldRequired('input_2') && <span className="text-red-500">*</span>}
           </label>
           <input
             id="input_2"
             type="text"
             value={inputs.input_2}
             onChange={(e) => setInputs((prev) => ({ ...prev, input_2: e.target.value }))}
-            className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm font-mono"
-          />
-
-        </div>
-
-        <div>
-          <label htmlFor="input_3" className="block text-sm font-medium text-gray-700">
-            Input 3
-          </label>
-          <input
-            id="input_3"
-            type="text"
-            value={inputs.input_3}
-            onChange={(e) => setInputs((prev) => ({ ...prev, input_3: e.target.value }))}
+            required={isFieldRequired('input_2')}
             className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm font-mono"
           />
         </div>
 
         <button type='submit' className='inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50'>
-          Execute
+          Schedule Execution
         </button>
       </form>
     </div>

@@ -6,12 +6,13 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { createDvCompBrgAsync, testDvCompBrgAsync, getTableColumnsAsync } from "@/store/userfeat/dvcompbrgThunks";
 import { toast } from "react-hot-toast";
 import { cn } from "@/lib/utils";
+import SortableMultiSelect from "@/components/ui/multiselect";
 
 interface BrgFormProps {
   selectedProject: string;
   setSelectedProject: (project: string) => void;
   setQueryResult: (results: { headers: string[]; rows: any[][]; error: string }) => void;
-  selectedRecord:DvCompBrg
+  selectedRecord:DvCompBrg | null;
   dvcompbrgs: DvCompBrg[];
 }
 
@@ -25,8 +26,8 @@ export function BrgForm({
   const dispatch = useAppDispatch();
   const [componentType, setComponentType] = useState("bv");
   const [componentSubtype, setComponentSubtype] = useState<
-    "pt" | "brdg" | "derived" | "cds" | "cdl" | "edl" | "dd" | "ft"
-  >("pt");
+    "pt" | "brdg" | "derived" | "cds" | "cdl" | "edl" | "dd" | "ft" | ""
+  >("");
   const [componentName, setComponentName] = useState("");
   const [sqlText, setSqlText] = useState("");
   const [isValidSql, setIsValidSql] = useState(false);
@@ -41,11 +42,26 @@ export function BrgForm({
   const [availableDateFieldName, setAvailableDateFieldName] = useState<string[]>([]);
   const [availableColumns, setAvailableColumns] = useState<string[]>([]);
   const [dateFieldName, setDateFieldName] = useState("");
+  const [selectedBkfields, setSelectedBkfields] = useState<string[]>([]);
+  const [availableBkfields, setAvailableBkfields] = useState<string[]>([]);
+
+
+  // useEffect(() => {
+  //   const fetchBkfields = async () => {
+  //     // if (selectedDataset) {
+  //       const resp = await dispatch(getTableColumnsAsync({ dataset: selectedDataset, project: selectedProject, comptype: 'dh', compname: componentName }));
+  //       if (resp.payload.status === 200) {
+  //         setAvailableBkfields(resp.payload.data || []);
+  //       }
+  //     }
+  //   // };
+  //   fetchBkfields();
+  // }, []);
 
   useEffect(() => {
     setIsValidated(false);
     console.log("processType",processType);
-  }, [selectedProject, componentType,processType, componentSubtype, dateFieldName, sqlText, componentName, version, partsNumber, parts.join(', ')]);
+  }, [selectedProject, componentType,processType, componentSubtype, sqlText, componentName, version, partsNumber, parts.join(', ')]);
 
   // const {projectAssigns} = useAppSelector(state => state.project);
   // const isProjectActive = (project?: string) => {
@@ -96,22 +112,28 @@ export function BrgForm({
     setComponentSubtype("pt");
     setComponentName("");
     setSqlText("");
-    setProcessType("app");
+    setProcessType("APP");
     setDateFieldName("");
   }, [componentType]);
 
   useEffect(() => {
     setComponentName("");
     setSqlText("");
-    setProcessType("app");
+    setProcessType("APP");
     setDateFieldName("");
   }, [componentSubtype]);
 
   useEffect(() => {
     setSqlText("");
-    setProcessType("app");
+    setProcessType("APP");
     setDateFieldName("");
   }, [componentName]);
+
+  useEffect(() => {
+    if (processType === "OW") {  
+      setDateFieldName("");
+    }
+  }, [processType]);
 
   const isFormValid = () => {
     return (
@@ -121,8 +143,7 @@ export function BrgForm({
       componentName !== "" &&
       sqlText !== "" &&
       // processType !== "" &&
-      processType !== 'OW' ? dateFieldName !== "" : true  &&
-      comments !== "" &&
+      // comments !== "" &&
       version > 0 
     );
   };
@@ -165,6 +186,7 @@ export function BrgForm({
         comments,
         version,
         compshortname,
+        bkfields: selectedBkfields,
       }
 
       const data = await dispatch(testDvCompBrgAsync(payload)).unwrap();
@@ -207,6 +229,7 @@ export function BrgForm({
   
           if (resp.payload.status === 200) {
             setAvailableDateFieldName(resp.payload.data || []);
+            setAvailableBkfields(resp.payload.data || []);
           } else {
             console.error("Error: Failed to fetch columns, status: ", resp.payload.status);
           }
@@ -241,6 +264,7 @@ export function BrgForm({
         comments,
         version,
         compshortname,
+        bkfields: selectedBkfields,
       };
 
       await dispatch(createDvCompBrgAsync(payload)).unwrap();
@@ -248,10 +272,16 @@ export function BrgForm({
 
       // Reset form
       setComponentName("");
+      setComponentSubtype("");
       setSqlText("");
       setDateFieldName("");
       setComments("");
       setVersion(1);
+      setSelectedProject("");
+      setComponentType(""); 
+      setSelectedBkfields([]);
+      setProcessType("");
+      // setComponentSubtype("");
     } catch (error: any) {
       console.error(error);
       toast.error(error.message || "Failed to create SG definition");
@@ -381,7 +411,6 @@ export function BrgForm({
             onChange={(e) => setDateFieldName(e.target.value)}
             disabled={!(processType === 'APP')}
             className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
-            required
           >
             <option value="">Select Date Field Name</option>
                {
@@ -389,6 +418,33 @@ export function BrgForm({
               }
                 
           </select>
+        </div>
+
+        <div>
+          <label htmlFor="bkfields" className="block text-sm font-medium text-gray-700">
+            Business Key Fields
+          </label>
+          {/* <select
+            multiple
+            id="bkfields"
+            value={selectedBkfields}
+            onChange={(e) => {
+              const values = Array.from(e.target.selectedOptions, option => option.value);
+              setSelectedBkfields(values);
+            }}
+            className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
+            required
+            size={5}
+          >
+            {availableBkfields.map(field => (
+              <option key={field} value={field}>{field}</option>
+            ))}
+          </select> */}
+          <SortableMultiSelect
+            onChange={setSelectedBkfields}
+            options={availableBkfields.filter(field => field !== dateFieldName)}
+            value={selectedBkfields}
+          />
         </div>
 
         <div>

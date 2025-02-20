@@ -20,6 +20,7 @@ export default function ConfigFtPage() {
   // Get data from Redux store
   const datasets = useAppSelector((state) => state.userfeat.dataset);
   const dhs = useAppSelector((state) => state.userfeat.rdvcomdh);
+  const dds = useAppSelector((state) => state.userfeat.dvcompdd);
 
   useEffect(() => {
     dispatch(getAllDatasetsAsync());
@@ -52,6 +53,7 @@ export default function ConfigFtPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <FtForm 
           datasets={datasets}
+          ddRecords={dds}
           selectedProject={selectedProject}
           setSelectedProject={setSelectedProject}
           isUpdate={false}

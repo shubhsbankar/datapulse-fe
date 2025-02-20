@@ -220,19 +220,55 @@ export function CsvDatasetForm({
             value={dataset.datastoreshortname}
             onChange={onInputChange}
             className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
-            disabled
           >
             <option value="CSV1">CSV1</option>
+            <option value="PKT">PKT</option>
           </select>
         </div>
 
-        <div className="flex gap-3 justify-evenly">
+        {dataset.datastoreshortname === 'CSV1' ? (
+          <div className="flex gap-3 justify-evenly">
+            <div>
+              <label
+                htmlFor="csvname"
+                className="block text-sm font-medium text-gray-700"
+              >
+                CSV Filename (without .csv)
+              </label>
+              <input
+                type="text"
+                id="csvname"
+                name="csvname"
+                value={dataset.csvname?.replace(".csv", "") || ""}
+                onChange={handleCsvNameChange}
+                className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-auto shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
+              />
+            </div>
+
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="csvdailysuffix"
+                name="csvdailysuffix"
+                checked={isSuffixDaily}
+                onChange={handleSuffixChange}
+                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+              />
+              <label
+                htmlFor="csvdailysuffix"
+                className="ml-2 block text-sm font-medium text-gray-700"
+              >
+                Suffix Daily
+              </label>
+            </div>
+          </div>
+        ) : (
           <div>
             <label
               htmlFor="csvname"
               className="block text-sm font-medium text-gray-700"
             >
-              CSV Filename (without .csv)
+              {dataset.datastoreshortname === 'CSV1' ? 'CSV Filename (without .csv)' : 'PKT Filename'}
             </label>
             <input
               type="text"
@@ -243,24 +279,8 @@ export function CsvDatasetForm({
               className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-auto shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
             />
           </div>
+        )}
 
-          <div className="flex items-center">
-            <input
-              type="checkbox"
-              id="csvdailysuffix"
-              name="csvdailysuffix"
-              checked={isSuffixDaily}
-              onChange={handleSuffixChange}
-              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-            />
-            <label
-              htmlFor="csvdailysuffix"
-              className="ml-2 block text-sm font-medium text-gray-700"
-            >
-              Suffix Daily
-            </label>
-          </div>
-        </div>
         <div>
           <label
             htmlFor="dsdatatype"

@@ -6,9 +6,9 @@ import { getAllDatasetsAsync } from '@/store/userfeat/datasetThunks';
 import { getAllRdvCompDhAsync } from '@/store/userfeat/rdvcompdhThunks';
 import { getAllRdvCompDlAsync } from '@/store/userfeat/rdvcompdlThunks';
 import { getAllRdvCompDsAsync } from '@/store/userfeat/rdvcompdsThunks';
-import { getAllDvCompBrgsAsync } from '@/store/userfeat/dvcompbrgThunks';
-import { BrgForm } from './components/BrgForm';
-import { BrgTabs } from './components/BrgTabs';
+import { getAllDvCompBrg2sAsync } from '@/store/userfeat/dvcompbrg2Thunks';
+import { Brg2Form } from './components/Brg2Form';
+import { Brg2Tabs } from './components/Brg2Tabs';
 import { formatDate } from '@/utils/dateFormatter';
 import { SqlResults } from '../execute-sql/components/SqlResults';
 
@@ -29,14 +29,15 @@ export default function BrgPage() {
   const dhs = useAppSelector((state) => state.userfeat.rdvcomdh);
   const dls = useAppSelector((state) => state.userfeat.rdvcompdl);
   const ds = useAppSelector((state) => state.userfeat.rdvcompds);
-  const brg = useAppSelector((state) => state.userfeat.dvcompbrg);
+  const brg = useAppSelector((state) => state.userfeat.dvcompbrg2);
+
 
   useEffect(() => {
     dispatch(getAllDatasetsAsync());
     dispatch(getAllRdvCompDhAsync());
     dispatch(getAllRdvCompDlAsync());
     dispatch(getAllRdvCompDsAsync());
-    dispatch(getAllDvCompBrgsAsync());
+    dispatch(getAllDvCompBrg2sAsync());
   }, [dispatch]);
 
   // Filter and pagination logic
@@ -96,14 +97,16 @@ export default function BrgPage() {
   return (
     <div className="space-y-6 mt-8">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <BrgForm 
+        <Brg2Form 
+          dhRecords={dhs}
+          dlRecords={dls}
           dvcompbrgs={filteredBrgs.items}
           selectedProject={selectedProject}
           setSelectedProject={setSelectedProject}
           setQueryResult={setQueryResult}
-          selectedRecord={null}
+          selectedRecord={undefined}
         />
-        <BrgTabs onExport={exportToCSV} />
+        <Brg2Tabs onExport={exportToCSV} />
       </div>
 
       <SqlResults results={queryResult || null} />

@@ -1,6 +1,6 @@
 'use client';
 
-import { DvCompFt } from "@/types/userfeat";
+import { DvCompBrg2 } from "@/types/userfeat";
 import { Search, ChevronLeft, ChevronRight, Filter, Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/dropdown';
 import { formatDate } from '@/utils/dateFormatter';
@@ -9,8 +9,8 @@ import { useState } from 'react';
 
 const ITEMS_PER_PAGE = 10;
 
-interface FtTableProps {
-  sgs: DvCompFt[];
+interface Brg2TableProps {
+  sgs: DvCompBrg2[];
 }
 
 // -- CREATE TABLE IF NOT EXISTS tst1a.dvcompsg1
@@ -36,7 +36,7 @@ interface FtTableProps {
 // --     CONSTRAINT dvcompsg1_pkey PRIMARY KEY (projectshortname, comptype, compname)
 // -- );
 
-export enum FtColumns {
+export enum Brg2Columns {
   // rdvid = 'rdvid',
   // projectshortname = 'projectshortname',
   // dpname = 'dpname',
@@ -65,19 +65,27 @@ export enum FtColumns {
   sqltext = 'sqltext',
   createdate = 'createdate',
   compshortname = 'compshortname',
-  version = 'version',
+  user_email = 'user_email',
   comments = 'comments',
+  processtype = 'processtype',
   datefieldname = 'datefieldname',
-  ddnums = 'ddnums',
-  ddnum = 'ddnum',
-  ddname = 'ddname',
-  ddversion = 'ddversion',
+  hubnums = 'hubnums', 
+  hubnum = 'hubnum',
+  hubname = 'hubname',
+  hubversion = 'hubversion',
   bkfields = 'bkfields',
+  lnknums = 'lnknums',
+  lnknum = 'lnknum',
+  lnkname = 'lnkname',
+  lnkversion = 'lnkversion',
+  lnkbkfields = 'lnkbkfields',
+  
+
   // actions = 'Actions',
 
 }
 
-export function FtTable({ sgs }: FtTableProps) {
+export function Brg2Table({ sgs }: Brg2TableProps) {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -85,46 +93,46 @@ export function FtTable({ sgs }: FtTableProps) {
   const [endDate, setEndDate] = useState('');
   const [selectedProject, setSelectedProject] = useState('');
   const [showColumnFilter, setShowColumnFilter] = useState(false);
-  const [visibleColumns, setVisibleColumns] = useState<Set<FtColumns>>(
-    new Set([...Object.values(FtColumns), FtColumns.actions])
+  const [visibleColumns, setVisibleColumns] = useState<Set<SgColumns>>(
+    new Set([...Object.values(Brg2Columns), Brg2Columns.actions])
   );
 
   // Filter logic
   const filteredSgs = sgs?.filter(item => {
-    const matchesSearch = Object.values(item).some(value => 
-      String(value).toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesSearch = Object.values(item || {}).some(value => 
+      String(value || '').toLowerCase().includes(searchTerm?.toLowerCase() || '')
     );
     
     const matchesDateRange = (!startDate || !endDate) ? true : 
-      new Date(item.createdate || '') >= new Date(startDate) && 
-      new Date(item.createdate || '') <= new Date(endDate);
+      new Date(item?.createdate || '') >= new Date(startDate) && 
+      new Date(item?.createdate || '') <= new Date(endDate);
     
-    const matchesProject = !selectedProject || item.projectshortname === selectedProject;
+    const matchesProject = !selectedProject || item?.projectshortname === selectedProject;
 
     return matchesSearch && matchesDateRange && matchesProject;
-  });
+  }) || [];
 
   // Pagination logic
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
-  const paginatedFts = filteredSgs?.slice(startIndex, endIndex);
-  const totalPages = Math.ceil(filteredSgs?.length / ITEMS_PER_PAGE);
+  const paginatedSgs = filteredSgs?.slice(startIndex, endIndex);
+  const totalPages = Math.ceil((filteredSgs?.length || 0) / ITEMS_PER_PAGE);
 
-  const uniqueProjects = Array.from(new Set(sgs?.map(d => d.projectshortname)));
+  const uniqueProjects = Array.from(new Set(sgs?.map(d => d?.projectshortname))) || [];
 
-  const toggleColumn = (column: FtColumns) => {
+  const toggleColumn = (column: Brg2Columns) => {
     const newVisibleColumns = new Set(visibleColumns);
-    if (newVisibleColumns.has(column)) {
-      newVisibleColumns.delete(column);
+    if (newVisibleColumns?.has(column)) {
+      newVisibleColumns?.delete(column);
     } else {
-      newVisibleColumns.add(column);
+      newVisibleColumns?.add(column);
     }
     setVisibleColumns(newVisibleColumns);
   };
 
-  // const handleUpdateClick = (rdvid: number) => {
-  //   router.push(`/user/config-sg/edit/${rdvid}`);
-  // };
+  const handleUpdateClick = (rdvid: number) => {
+    router.push(`/user/config-sg/edit/${rdvid}`);
+  };
 
   return (
     <div className="bg-white shadow rounded-lg p-6">
@@ -135,7 +143,7 @@ export function FtTable({ sgs }: FtTableProps) {
           className="border border-gray-300 rounded-md px-3 py-2"
         >
           <option value="">All Projects</option>
-          {uniqueProjects.map(project => (
+          {uniqueProjects?.map(project => (
             <option key={project} value={project}>{project}</option>
           ))}
         </select>
@@ -179,7 +187,7 @@ export function FtTable({ sgs }: FtTableProps) {
           </Button>
           {showColumnFilter && (
             <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-10">
-              {Object.values(FtColumns).map(column => (
+              {Object.values(Brg2Columns).map(column => (
                 <label key={column} className="flex items-center px-4 py-2 hover:bg-gray-100">
                   <input
                     type="checkbox"
@@ -199,8 +207,8 @@ export function FtTable({ sgs }: FtTableProps) {
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              {Object.values(FtColumns).map(column => (
-                visibleColumns.has(column) && (
+              {Object.values(Brg2Columns)?.map(column => (
+                visibleColumns?.has(column) && (
                   <th key={column} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {column}
                   </th>
@@ -212,25 +220,17 @@ export function FtTable({ sgs }: FtTableProps) {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {paginatedFts?.map((ft) => (
-              <tr key={ft?.dvid}>
-                {Object.values(FtColumns).map(column => (
-                  visibleColumns.has(column) && (
-                    // <td key={column} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    //   {column === 'createdate' ? formatDate(sg[column] || '') :
-                    //    column === 'sqltext' ? 
-                    //    (Array.isArray(sg[column]) ? sg[column].join(', ') : sg[column]) :
-                    //    sg[column as keyof DvCompFt]}
-                    // </td>
-                    <td key={column} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {column === FtColumns.createdate
-                      ? formatDate(ft[column] as string)
+            {paginatedSgs?.map((brg) => (
+              <tr key={brg?.dvid}>
+                {Object.values(Brg2Columns).filter(column => visibleColumns.has(column)).map((column) => (
+                  <td key={column} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {column === Brg2Columns.createdate
+                      ? formatDate(brg[column] as string)
                       :
-                      Array.isArray(ft[column as keyof DvCompFt]) 
-                        ? (ft[column as keyof DvCompFt] as string[]).join(', ') 
-                        : ft[column as keyof DvCompFt]}
+                      Array.isArray(brg[column as keyof DvCompBrg2]) 
+                        ? (brg[column as keyof DvCompBrg2] as string[]).join(', ') 
+                        : brg[column as keyof DvCompBrg2]}
                   </td>
-                  )
                 ))}
                 {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   <button
@@ -249,8 +249,8 @@ export function FtTable({ sgs }: FtTableProps) {
       <div className="mt-4 flex items-center justify-between">
         <div className="text-sm text-gray-700">
           Showing {((currentPage - 1) * ITEMS_PER_PAGE) + 1} to{' '}
-          {Math.min(currentPage * ITEMS_PER_PAGE, filteredSgs?.length)} of{' '}
-          {filteredSgs?.length} results
+          {Math.min(currentPage * ITEMS_PER_PAGE, filteredSgs?.length || 0)} of{' '}
+          {filteredSgs?.length || 0} results
         </div>
         <div className="flex items-center space-x-2">
           <Button

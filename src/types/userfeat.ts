@@ -119,6 +119,7 @@ export interface RdvCompDl {
   version: number;
   hubnums: number;
   hubname: string;
+  hubnum: number;
   hubversion: string;
   bkfields: string[];
   createdate?: string;
@@ -222,6 +223,32 @@ export interface DvCompBrg {
   version?: number;
   processtype?: string;
   datefieldname?: string;
+  bkfields?: string[] | null;
+}
+
+export interface DvCompBrg2 {
+  dvid?: number;
+  projectshortname: string;
+  comptype: string;
+  compname: string;
+  compsubtype: string;
+  sqltext?: string;
+  createdate?: string;
+  compshortname?: string;
+  comments?: string;
+  version?: number;
+  processtype?: string;
+  hubnum?: number | null;
+  hubnums?: number;
+  hubname?: string | null;
+  hubversion?: string | null;
+  bkfields?: string[] | null;
+  lnknums?: number;
+  lnknum?: number | null;
+  lnkname?: string | null;
+  lnkversion?: string | null;
+  lnkbkfields?: string[] | null;
+  datefieldname?: string;
 }
 
 export interface DvCompDd {
@@ -251,6 +278,11 @@ export interface DvCompFt {
   compshortname?: string;
   version?: number;
   datefieldname?: string;
+  ddnums?: number;
+  ddnum?: number | null;
+  ddname?: string | null;
+  ddversion?: string | null;
+  bkfields?: string[] | null;
 }
 
 export interface DvBojSg1 {

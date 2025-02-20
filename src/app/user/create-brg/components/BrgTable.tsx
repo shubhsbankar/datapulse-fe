@@ -65,10 +65,11 @@ export enum BrgColumns {
   sqltext = 'sqltext',
   createdate = 'createdate',
   compshortname = 'compshortname',
-  // user_email = 'user_email',
+  user_email = 'user_email',
   comments = 'comments',
   processtype = 'processtype',
   datefieldname = 'datefieldname',
+  bkfields = 'bkfields',
   // actions = 'Actions',
 
 }
@@ -103,7 +104,7 @@ export function BrgTable({ sgs }: BrgTableProps) {
   // Pagination logic
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
-  const paginatedSgs = filteredSgs.slice(startIndex, endIndex);
+  const paginatedBrgs = filteredSgs.slice(startIndex, endIndex);
   const totalPages = Math.ceil(filteredSgs.length / ITEMS_PER_PAGE);
 
   const uniqueProjects = Array.from(new Set(sgs.map(d => d.projectshortname)));
@@ -208,16 +209,18 @@ export function BrgTable({ sgs }: BrgTableProps) {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {paginatedSgs.map((sg) => (
-              <tr key={sg.dvid}>
+            {paginatedBrgs.map((brg) => (
+              <tr key={brg.dvid}>
                 {Object.values(BrgColumns).map(column => (
                   visibleColumns.has(column) && (
                     <td key={column} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {column === 'createdate' ? formatDate(sg[column] || '') :
-                       column === 'sqltext' ? 
-                       (Array.isArray(sg[column]) ? sg[column].join(', ') : sg[column]) :
-                       sg[column as keyof DvCompBrg]}
-                    </td>
+                    {column === BrgColumns.createdate
+                      ? formatDate(brg[column] as string)
+                      :
+                      Array.isArray(brg[column as keyof DvCompBrg]) 
+                        ? (brg[column as keyof DvCompBrg] as string[]).join(', ') 
+                        : brg[column as keyof DvCompBrg]}
+                  </td>
                   )
                 ))}
                 {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">

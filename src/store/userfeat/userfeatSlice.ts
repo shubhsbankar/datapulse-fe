@@ -19,6 +19,7 @@ import {
   DvCompDd,
   DvCompFt,
   LandingDataset,
+  DvCompBrg2,
 } from "@/types/userfeat";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
@@ -27,6 +28,7 @@ interface UserFeatState {
   dvcompsg1: DvCompSg1[];
   dvcomppt: DvCompPt[];
   dvcompbrg: DvCompBrg [];
+  dvcompbrg2: DvCompBrg2[];
   dvcompsg1b: DvCompSg1b[];
   rdvcompdl: RdvCompDl[];
   rdvcomdh: RdvCompDh[];
@@ -66,6 +68,7 @@ const initialState: UserFeatState = {
   dvcompdd: [],
   dvcompft: [],
   lnddataset: [],
+  dvcompbrg2: [],
 };
 
 export const userfeatSlice = createSlice({
@@ -89,6 +92,9 @@ export const userfeatSlice = createSlice({
     },
     setDvCompbrg: (state, action: PayloadAction<DvCompBrg[]>) => {
       state.dvcompbrg = action.payload;
+    },
+    setDvCompbrg2: (state, action: PayloadAction<DvCompBrg2[]>) => {
+      state.dvcompbrg2 = action.payload;
     },
     setDvCompsg1b: (state, action: PayloadAction<DvCompSg1b[]>) => {
       state.dvcompsg1b = action.payload;
@@ -156,6 +162,7 @@ export const {
   setDvCompDd,
   setDvCompFt,
   setLndDataset,
+  setDvCompbrg2,
 } = userfeatSlice.actions;
 
 export default userfeatSlice.reducer;

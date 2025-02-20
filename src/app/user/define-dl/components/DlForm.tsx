@@ -247,7 +247,7 @@ export function DlForm({
         comptype: 'dl',
         compname: componentName,
         compkeyname: `${componentName}_k2`,
-        compshortname: `${selectedProject}-${selectedDataProduct}-${selectedDataset}-${componentName}-${version}`,
+        compshortname: `${selectedProject}_${selectedDataProduct}_${selectedDataset}_${componentName}_${version}`,
         degen: isDegen,
         degenids: selectedDegenIds,
         tenantid: tenantId,
