@@ -100,7 +100,7 @@ export default function ExecuteSqlPage() {
             value={inputs.execution_date}
             onChange={(e) => setInputs((prev) => ({ ...prev, execution_date: e.target.value }))}
             required={isFieldRequired('execution_date')}
-            pattern='[0-9]{4}-[0-9]{2}-[0-9]{2}'
+            //pattern='[0-9]{4}-[0-9]{2}-[0-9]{2}'
             className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm font-mono"
             placeholder='yyyy-mm-dd'
           />

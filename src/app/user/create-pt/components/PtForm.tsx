@@ -108,17 +108,22 @@ export function PtForm({
         satlname: satelliteRows.map(row => row.name).join(','),
         satlversion: satelliteRows[0].version//satelliteRows.map(row => row.version).join(','),
       };
+      await toast.promise(
+        dispatch(testDvCompPtAsync(payload)).unwrap(),
+        {
+          loading: 'Validating configuration...',
+          success: (data) => {
+            setQueryResult(data.data);
 
-      const data = await dispatch(testDvCompPtAsync(payload)).unwrap()
-      setQueryResult(data.data);
-      if (data.data.error) {
-        setIsValidated(false);
-        toast.error(data.data.error);
-        return false;
-      }
-      toast.success(data.message || 'Configuration is valid');
-      setIsValidated(true);
-      return true;
+            setIsValidated(true);
+            return data.message || 'Configuration is valid';
+          },
+          error: (err) => {
+            setIsValidated(false);
+            return err.message || 'Validation failed';
+          }
+        }
+      );
     } catch (error) {
       console.error(error);
       toast.error(error.message || 'Validation failed');

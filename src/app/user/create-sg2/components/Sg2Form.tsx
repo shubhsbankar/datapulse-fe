@@ -58,7 +58,8 @@ export function Sg2Form({
   };
 
   const handleValidate = async () => {
-
+    console.log("handleValidate called with componentSubtype:", componentSubtype);
+    setIsValidated(false); // Reset validation state
     if (!isFormValid()) {
       toast.error('Please fill in all required fields before validating');
       return false;
@@ -74,38 +75,22 @@ export function Sg2Form({
         comments,
       };
 
-      // await toast.promise(
-      //   dispatch(testDvCompSg1Async(payload)).unwrap(),
-      //   {
-      //     loading: 'Validating configuration...',
-      //     success: (data) => {
-      //       setQueryResult(data.data);
+      await toast.promise(
+        dispatch(testDvCompSg2Async(payload)).unwrap(),
+        {
+          loading: 'Validating configuration...',
+          success: (data) => {
+            setQueryResult(data.data);
 
-      //       setIsValidated(true);
-      //       return data.message || 'Configuration is valid';
-      //     },
-      //     error: (err) => {
-      //       setIsValidated(false);
-      //       return err.message || 'Validation failed';
-      //     }
-      //   }
-      // );
-
-      const data = await dispatch(testDvCompSg2Async(payload)).unwrap()
-      if (Object.keys(data.data).length !== 0) {
-        setQueryResult(data.data);
-    }
-    else {
-      setQueryResult(null);
-    }
-      
-      if (data.data.error) {
-        setIsValidated(false);
-        toast.error(data.data.error);
-        return false;
-      }
-      toast.success(data.message || 'Configuration is valid');
-      return true;
+            setIsValidated(true);
+            return data.message || 'Configuration is valid';
+          },
+          error: (err) => {
+            setIsValidated(false);
+            return err.message || 'Validation failed';
+          }
+        }
+      );
     } catch (error) {
       console.error(error);
       toast.error(error.message || 'Validation failed');
@@ -115,12 +100,17 @@ export function Sg2Form({
   };
 
 
-  // useEffect(() => {
-  //   setIsValidated(false);
-  // }, [
-  //   componentType,
-  //   componentSubtype,
-  // ]);
+  useEffect(() => {
+    setIsValidated(false);
+  }, [
+    componentType,
+    componentSubtype,
+    sqlText,
+    componentName,
+    selectedProject,
+    comments,
+    version
+  ]);
 
   useEffect(() => {
     console.log("ComponentSubType changed",componentSubtype);
@@ -139,10 +129,13 @@ export function Sg2Form({
 
   // }, [componentType]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    if (!(await handleValidate())) return;
+   
+    // if (await !(handleValidate())) {
+    //   console.log("Shubam handleSubmit changed 2");
+    //   return;
+    // }
 
     try {
       const payload: DvCompSg2 = {
@@ -342,9 +335,24 @@ export function Sg2Form({
 
 
         <div className="flex justify-end space-x-4">
+        <button
+            type="button"
+            onClick={handleValidate}
+            // disabled={!isFormValid()}
+            className={cn(
+              "inline-flex justify-center py-2 px-4 border shadow-sm text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500",
+              isValidated
+                ? "border-green-500 text-green-700 bg-green-50 hover:bg-green-100"
+                // : !isFormValid()
+                //   ? "border-gray-300 text-gray-400 bg-gray-50 cursor-not-allowed"
+                  : "border-gray-300 text-gray-700 bg-white hover:bg-gray-50"
+            )}
+          >
+            {isValidated ? '✓ Configuration Validated' : 'Validate Configuration'}
+          </button>
           <button
             type="submit"
-            disabled={!isFormValid()}
+            disabled={!isValidated}
             className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isUpdate ? 'Update' : 'Create'} SG 2 Configuration

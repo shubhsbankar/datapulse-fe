@@ -57,7 +57,7 @@ export function DatasetsTable({
   }
   datasets = datasets.filter(ds => isProjectActive(ds.projectshortname));
   if (isCDS) {
-    datasets = datasets.filter(ds => ds.datastoreshortname === 'CSV1');
+    datasets = datasets.filter(ds => ds.datastoreshortname === 'CSV1' || ds.datastoreshortname === 'parquet');
   }
   if (filterCSV1) {
     datasets = datasets.filter(ds => ds.datastoreshortname !== 'CSV1');

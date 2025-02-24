@@ -36,8 +36,8 @@ export function BrgForm({
   const [comments, setComments] = useState("");
   const [version, setVersion] = useState(1);
   const [compshortname, setCompshortname] = useState("");
-  const [partsNumber, setPartsNumber] = useState(0);
-  const [parts, setParts] = useState<string[]>([]);
+  // const [partsNumber, setPartsNumber] = useState(0);
+  // const [parts, setParts] = useState<string[]>([]);
   const [isValidated, setIsValidated] = useState(false);
   const [availableDateFieldName, setAvailableDateFieldName] = useState<string[]>([]);
   const [availableColumns, setAvailableColumns] = useState<string[]>([]);
@@ -61,7 +61,7 @@ export function BrgForm({
   useEffect(() => {
     setIsValidated(false);
     console.log("processType",processType);
-  }, [selectedProject, componentType,processType, componentSubtype, sqlText, componentName, version, partsNumber, parts.join(', ')]);
+  }, [selectedProject, componentType,processType, componentSubtype, sqlText, componentName, version,selectedBkfields]);
 
   // const {projectAssigns} = useAppSelector(state => state.project);
   // const isProjectActive = (project?: string) => {
@@ -75,8 +75,9 @@ export function BrgForm({
   // const uniqueComponentTypes = Array.from(new Set(dvcompbrgs?.map(sg => sg.comptype)));
   // console.log({ uniqueComponentTypes });
   const uniqueComponentTypes = ['BV']
-  const uniqueComponentSubtypes = ['BRDG', 'Derived-CS', 'Derived-CAL', 'Derived-EL', 'Derived-others']/*Array.from(new Set(dvcompbrgs?.filter(sg => sg.comptype === componentType)
-    .map(sg => sg.compsubtype)));*/
+  // const uniqueComponentSubtypes = ['BRDG', 'Derived-CS', 'Derived-CAL', 'Derived-EL', 'Derived-others']/*Array.from(new Set(dvcompbrgs?.filter(sg => sg.comptype === componentType)
+    //.map(sg => sg.compsubtype)));*/
+  const uniqueComponentSubtypes = [ 'Derived-CS']
   const uniqueComponentNames = Array.from(new Set(dvcompbrgs?.filter(sg => sg.comptype === componentType && sg.compsubtype === componentSubtype)
     .map(sg => sg.compname)));
   const uniqueSqlTemplates = Array.from(new Set(dvcompbrgs?.filter(sg => sg.compname === componentName)
@@ -109,23 +110,23 @@ export function BrgForm({
 
   // Reset dependent fields when parent selection changes
   useEffect(() => {
-    setComponentSubtype("pt");
+    setComponentSubtype("");
     setComponentName("");
     setSqlText("");
-    setProcessType("APP");
+    setProcessType("");
     setDateFieldName("");
   }, [componentType]);
 
   useEffect(() => {
     setComponentName("");
     setSqlText("");
-    setProcessType("APP");
+    setProcessType("");
     setDateFieldName("");
   }, [componentSubtype]);
 
   useEffect(() => {
     setSqlText("");
-    setProcessType("APP");
+    setProcessType("");
     setDateFieldName("");
   }, [componentName]);
 
@@ -144,7 +145,8 @@ export function BrgForm({
       sqlText !== "" &&
       // processType !== "" &&
       // comments !== "" &&
-      version > 0 
+      version > 0 &&
+      selectedBkfields.length > 0
     );
   };
 
@@ -166,11 +168,14 @@ export function BrgForm({
 
   const handleValidate = async () => {
     if (!isFormValid()) {
-      // if (!/^\d{4}-\d{2}-\d{2}$/.test(dateFieldName)) {
-      //   toast.error('Date field name must be in yyyy-mm-dd format');
-      // } else {
-      //   toast.error('Please fill in all required fields before validating');
-      // }
+      const missingFields = [];
+      if (selectedProject === "") missingFields.push("Project");
+      if (componentName === "") missingFields.push("Component Name"); 
+      if (sqlText === "") missingFields.push("SQL Text");
+      if (version <= 0) missingFields.push("Version");
+      if (selectedBkfields.length === 0) missingFields.push("Business Key Fields");
+
+      toast.error(`Please fill in the following required fields: ${missingFields.join(", ")}`);
       return;
     }
 
@@ -188,17 +193,21 @@ export function BrgForm({
         compshortname,
         bkfields: selectedBkfields,
       }
-
-      const data = await dispatch(testDvCompBrgAsync(payload)).unwrap();
-      setQueryResult(data.data);
-      if (data.data.error) {
-        setIsValidated(false);
-        toast.error(data.data.error);
-        return false;
-      }
-      setIsValidated(true);
-      toast.success(data.message || 'Configuration is valid');
-      return true;
+      await toast.promise(
+        dispatch(testDvCompBrgAsync(payload)).unwrap(),
+        {
+          loading: 'Validating configuration...',
+          success: (data) => {
+            setQueryResult(data.data);
+            setIsValidated(true);
+            return data.message || 'Configuration is valid';
+          },
+          error: (err) => {
+            setIsValidated(false);
+            return err.message || 'Validation failed';
+          }
+        }
+      );
     } catch (error) {
       console.error(error);
       toast.error(error.message || 'Validation failed');
@@ -223,7 +232,7 @@ export function BrgForm({
         console.log("getColumsAndData called with processType: ", processType);
   
         // Only proceed if the process type is 'APP'
-        if (processType === "APP" && sqlText.length != 0) {
+        if (processType !== '' && sqlText.length != 0) {
           const resp = await dispatch(getTableColumnsAsync({ sqltext: sqlText }));
           console.log("Response received: ", resp);
   

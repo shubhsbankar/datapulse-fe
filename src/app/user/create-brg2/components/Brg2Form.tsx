@@ -39,7 +39,7 @@ export function Brg2Form({
 }: Brg2FormProps) {
   const dispatch = useAppDispatch();
   const [componentType, setComponentType] = useState("bv");
-  const [componentSubtype, setComponentSubtype] = useState<"brdg" | "cal" | "el">("brdg");
+  const [componentSubtype, setComponentSubtype] = useState<"brdg" | "cal" | "el"| "">("");
   const [componentName, setComponentName] = useState("");
   const [sqlText, setSqlText] = useState("");
   const [isValidSql, setIsValidSql] = useState(false);
@@ -48,13 +48,11 @@ export function Brg2Form({
   const [comments, setComments] = useState("");
   const [version, setVersion] = useState(1);
   const [compshortname, setCompshortname] = useState("");
-  const [partsNumber, setPartsNumber] = useState(0);
-  const [parts, setParts] = useState<string[]>([]);
   const [isValidated, setIsValidated] = useState(false);
   const [availableDateFieldName, setAvailableDateFieldName] = useState<string[]>([]);
   const [availableColumns, setAvailableColumns] = useState<string[]>([]);
   const [availableBkfields, setAvailableBkfields] = useState<string[]>([]);
-  const [availableLinkBkfields, setAvailableLinkBkfields] = useState<string[]>([]);
+  // const [availableLinkBkfields, setAvailableLinkBkfields] = useState<string[]>([]);
   const [hubCount, setHubCount] = useState<number>(1);
   const [hubConfigs, setHubConfigs] = useState<HubConfig[]>(
     Array(5).fill(null).map(() => ({
@@ -97,7 +95,7 @@ export function Brg2Form({
     if (processType === "OW" ) {
       setDateFieldName("");
     }
-  }, [selectedProject, componentType, processType, componentSubtype, sqlText, componentName, version, partsNumber, parts.join(', ')]);
+  }, [selectedProject, componentType, processType, componentSubtype, sqlText, componentName, version, hubConfigs, linkConfigs]);
 
   // const {projectAssigns} = useAppSelector(state => state.project);
   // const isProjectActive = (project?: string) => {
@@ -111,7 +109,7 @@ export function Brg2Form({
   // const uniqueComponentTypes = Array.from(new Set(dvcompbrgs?.map(sg => sg.comptype)));
   // console.log({ uniqueComponentTypes });
   const uniqueComponentTypes = ['BV']
-  const uniqueComponentSubtypes = ['BRDG', 'CAL', 'EL']/*Array.from(new Set(dvcompbrgs?.filter(sg => sg.comptype === componentType)
+  const uniqueComponentSubtypes = ['BRDG', 'CAL', 'EL', 'CS']/*Array.from(new Set(dvcompbrgs?.filter(sg => sg.comptype === componentType)
     .map(sg => sg.compsubtype)));*/
   const uniqueComponentNames = Array.from(new Set(dvcompbrgs?.filter(sg => sg.comptype === componentType && sg.compsubtype === componentSubtype)
     .map(sg => sg.compname)));
@@ -146,70 +144,46 @@ export function Brg2Form({
       bkfields: dl.bkfields || []
     }))
     console.log("dlRecords",{dlRecords});
-   useEffect(() => {
-        const fetchDateFields = async () => {
-            const resp = await dispatch(getTableColumnsAsync({ 
-              project: selectedProject, 
-              comptype: componentType, 
-              compname: componentName,
-              fieldType: 'date'
-            }));
-            if (resp.payload.status === 200) {
-              setAvailableDateFieldName(resp.payload.data || []);
-            }
-        };
+  //  useEffect(() => {
+  //       const fetchDateFields = async () => {
+  //           const resp = await dispatch(getTableColumnsAsync({ 
+  //             project: selectedProject, 
+  //             comptype: componentType, 
+  //             compname: componentName,
+  //             fieldType: 'date'
+  //           }));
+  //           if (resp.payload.status === 200) {
+  //             setAvailableDateFieldName(resp.payload.data || []);
+  //           }
+  //       };
 
-        const fetchBkFields = async () => {
-            const resp = await dispatch(getTableColumnsAsync({ 
-              project: selectedProject, 
-              comptype: componentType, 
-              compname: componentName,
-              fieldType: 'bk'
-            }));
-            if (resp.payload.status === 200) {
-              setAvailableBkfields(resp.payload.data || []);
-            }
-        };
 
-        const fetchLinkBkFields = async () => {
-            const resp = await dispatch(getTableColumnsAsync({ 
-              project: selectedProject, 
-              comptype: componentType, 
-              compname: componentName,
-              fieldType: 'linkbk'
-            }));
-            if (resp.payload.status === 200) {
-              setAvailableLinkBkfields(resp.payload.data || []);
-            }
-        };
 
-        if (selectedProject && componentType && componentName) {
-          fetchDateFields();
-          fetchBkFields(); 
-          fetchLinkBkFields();
-        }
-      }, [dispatch, selectedProject, componentName, componentType]);
+  //       if (selectedProject && componentType && componentName) {
+  //         fetchDateFields();
+  //       }
+  //     }, [dispatch, selectedProject, componentName, componentType]);
 
 
   // Reset dependent fields when parent selection changes
   useEffect(() => {
-    setComponentSubtype("brdg");
+    setComponentSubtype("");
     setComponentName("");
     setSqlText("");
-    setProcessType("APP");
+    setProcessType("");
     // setDateFieldName("");
   }, [componentType]);
 
   useEffect(() => {
     setComponentName("");
     setSqlText("");
-    setProcessType("APP");
+    setProcessType("");
     // setDateFieldName("");
   }, [componentSubtype]);
 
   useEffect(() => {
     setSqlText("");
-    setProcessType("APP");
+    setProcessType("");
     // setDateFieldName("");
   }, [componentName]);
 
@@ -290,19 +264,21 @@ export function Brg2Form({
         lnkversion: validLinkConfigs[0]?.linkVersion || '1',
         lnkbkfields: validLinkConfigs.map(config => (config.bkfields || []).join(',')),
       }
-
-      console.log("Brg2 Payload : ",payload);
-
-      const data = await dispatch(testDvCompBrg2Async(payload)).unwrap();
-      setQueryResult(data.data);
-      if (data.data.error) {
-        setIsValidated(false);
-        toast.error(data.data.error);
-        return false;
-      }
-      setIsValidated(true);
-      toast.success(data.message || 'Configuration is valid');
-      return true;
+      await toast.promise(
+        dispatch(testDvCompBrg2Async(payload)).unwrap(),
+        {
+          loading: 'Validating configuration...',
+          success: (data) => {
+            setQueryResult(data.data);
+            setIsValidated(true);
+            return data.message || 'Configuration is valid';
+          },
+          error: (err) => {
+            setIsValidated(false);
+            return err.message || 'Validation failed';
+          }
+        }
+      );
     } catch (error) {
       console.error(error);
       toast.error(error.message || 'Validation failed');
@@ -327,7 +303,7 @@ export function Brg2Form({
         console.log("getColumsAndData called with processType: ", processType);
 
         // Only proceed if the process type is 'APP'
-        if (processType === "APP" && sqlText.length != 0) {
+        if (processType !== '' && sqlText.length != 0) {
           const resp = await dispatch(getTableColumnsAsync({ sqltext: sqlText }));
           console.log("Response received: ", resp);
 
@@ -745,7 +721,7 @@ export function Brg2Form({
                       console.log("availableBkfields:", availableBkfields);
                       return availableDateFieldName
                         .filter((f) => 
-                          !(dateFieldName === f)
+                          !(dateFieldName === f) && !hubConfigs.some((cfg, idx) => idx !== index && cfg.bkfields.includes(f))
                         );
                     })()}
                   />
@@ -878,7 +854,7 @@ export function Brg2Form({
                     options={availableDateFieldName
                       .filter(
                         (f) =>
-                          !(dateFieldName === f)
+                          !(dateFieldName === f) && !linkConfigs.some((cfg, idx) => idx !== index && cfg.bkfields.includes(f))
                       )}
                   />
                 </div>

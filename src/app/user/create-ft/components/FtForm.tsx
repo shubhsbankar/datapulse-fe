@@ -64,7 +64,7 @@ export function FtForm({
   const [ddConfigs, setDdConfigs] = useState<DdConfig[]>(
     Array(5).fill(null).map(() => ({
       ddName: '',
-      ddVersion: '1',
+      ddVersion: '1', 
       bkfields: []
     }))
   );
@@ -92,15 +92,22 @@ export function FtForm({
     return (
       selectedProject !== '' &&
       componentName !== '' &&
-      sqlText !== '' //&&
-      // dateFieldName !== ''
+      sqlText !== '' &&
+      (componentSubtype !== 'type2' || ddConfigs.every(config => config.ddName !== '' && config.bkfields.length > 0))
     );
   };
 
   const handleValidate = async () => {
 
     if (!isFormValid()) {
-      toast.error('Please fill in all required fields before validating');
+      const missingFields = [];
+      if (selectedProject === "") missingFields.push("Project");
+      if (componentName === "") missingFields.push("Component Name"); 
+      if (sqlText === "") missingFields.push("SQL Text");
+      if (componentSubtype === 'type2' && !ddConfigs.every(config => config.ddName !== '' && config.bkfields.length > 0)) {
+        missingFields.push("DD Configurations");
+      }
+      toast.error(`Please fill in the following required fields: ${missingFields.join (", ")}`);
       return false;
     }
 
@@ -116,38 +123,27 @@ export function FtForm({
         datefieldname: dateFieldName,
         ddnums: ddCount || 1,
         ddnum: 1,
-        ddname: ddConfigs[0]?.ddName || '',
-        ddversion: ddConfigs[0]?.ddVersion || '1',
-        bkfields: ddConfigs[0]?.bkfields || []
+        ddname: ddConfigs.map(config => config.ddName).join(','),
+        ddversion: ddConfigs[0].ddVersion,
+        bkfields: ddConfigs.map(config => config.bkfields.join(','))
       };
+  
 
-      // await toast.promise(
-      //   dispatch(testDvCompSg1Async(payload)).unwrap(),
-      //   {
-      //     loading: 'Validating configuration...',
-      //     success: (data) => {
-      //       setQueryResult(data.data);
-
-      //       setIsValidated(true);
-      //       return data.message || 'Configuration is valid';
-      //     },
-      //     error: (err) => {
-      //       setIsValidated(false);
-      //       return err.message || 'Validation failed';
-      //     }
-      //   }
-      // );
-
-      const data = await dispatch(testDvCompFtAsync(payload)).unwrap()
-      setQueryResult(data.data);
-      if (data.data.error) {
-        setIsValidated(false);
-        toast.error(data.data.error);
-        return false;
-      }
-      toast.success(data.message || 'Configuration is valid');
-      setIsValidated(true);
-      return true;
+      await toast.promise(
+        dispatch(testDvCompFtAsync(payload)).unwrap(),
+        {
+          loading: 'Validating configuration...',
+          success: (data) => {
+            setQueryResult(data.data);
+            setIsValidated(true);
+            return data.message || 'Configuration is valid';
+          },
+          error: (err) => {
+            setIsValidated(false);
+            return err.message || 'Validation failed';
+          }
+        }
+      );
     } catch (error) {
       console.error(error);
       toast.error(error.message || 'Validation failed');
@@ -165,6 +161,7 @@ export function FtForm({
     componentType,
     componentSubtype,
     sqlText,
+    ddConfigs
   ]);
 
   useEffect(() => {
@@ -201,7 +198,7 @@ export function FtForm({
         compsubtype: componentSubtype,
         sqltext: sqlText,
         comments,
-        compshortname: `${selectedProject}-${componentType}-${componentSubtype}-${componentName}-${version}`,
+        compshortname: `${selectedProject}_${componentType}_${componentSubtype}_${componentName}_${version}`,
         version,
         datefieldname: dateFieldName,
         ddnums: ddCount,
@@ -432,34 +429,35 @@ export function FtForm({
             required
           />
         </div>
-
-        {/* Link Count Selection */}
-        <div>
-          <label
-            htmlFor="ddCount"
-            className="block text-sm font-medium text-gray-700"
-          >
-            DD Count (1-14)
-          </label>
-          <input
-            type="number"
-            id="ddCount"
-            value={ddCount}
-            onChange={(e) =>
-              setDdCount(Math.min(14, Math.max(1, parseInt(e.target.value))))
-            }
-            min={1}
-            max={componentSubtype === 'type1' ? 1 : 14}
-            className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
-            required
-          />
-        </div>
-        {/* Warning Message */}
-        <div className="mt-2 mb-2">
-          <p className="text-sm text-amber-600 font-medium">
-            Please select the same bkfields in the same order of dd
-          </p>
-        </div>
+        {componentSubtype === 'type2' && (
+          <>
+            {/* Link Count Selection */}
+            <div>
+              <label
+                htmlFor="ddCount"
+                className="block text-sm font-medium text-gray-700"
+              >
+                DD Count (1-14)
+              </label>
+              <input
+                type="number"
+                id="ddCount"
+                value={ddCount}
+                onChange={(e) =>
+                  setDdCount(Math.min(14, Math.max(1, parseInt(e.target.value))))
+                }
+                min={1}
+                max={14}
+                className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
+                required
+              />
+            </div>
+            {/* Warning Message */}
+            <div className="mt-2 mb-2">
+              <p className="text-sm text-amber-600 font-medium">
+                Please select the same bkfields in the same order of dd
+              </p>
+            </div>
 
         {/* DD Configurations */}
         <div className="space-y-4">
@@ -481,12 +479,18 @@ export function FtForm({
                     onChange={(e) => {
                       const newConfigs = [...ddConfigs];
                       newConfigs[index].ddName = e.target.value;
-                      const selectedLink = availableDds.find(
-                        (h) => h.name === e.target.value
-                      );
-                      if (selectedLink) {
-                        newConfigs[index].ddVersion = selectedLink.version;
-                        newConfigs[index].bkfields = selectedLink.bkfields;
+                      if (e.target.value === '') {
+                        // Reset values when no DD is selected
+                        newConfigs[index].ddVersion = '1';
+                        newConfigs[index].bkfields = [];
+                      } else {
+                        const selectedLink = availableDds.find(
+                          (h) => h.name === e.target.value
+                        );
+                        if (selectedLink) {
+                          newConfigs[index].ddVersion = selectedLink.version;
+                          newConfigs[index].bkfields = selectedLink.bkfields;
+                        }
                       }
                       setDdConfigs(newConfigs);
                     }}
@@ -526,44 +530,30 @@ export function FtForm({
                   />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    BK Fields
-                  </label>
-                  {/* <select
-                      multiple
-                      value={config.bkfields}
-                      required
-                      onChange={(e) => {
-                        const newConfigs = [...hubConfigs];
-                        newConfigs[index].bkfields = Array.from(e.target.selectedOptions, option => option.value);
-                        setHubConfigs(newConfigs);
-                      }}
-                      className="mt-1 block w-full rounded-md border border-gray-300 bg-gray-50 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
-                      size={3}
-                    >
-                      {availableBkfields.filter(bk => !selectedDegenIds.includes(bk)).filter(f => !hubConfigs.some(cfg => cfg.bkfields.includes(f)) || hubConfigs[index].bkfields.includes(f)).map(field => (
-                        <option key={field} value={field}>{field}</option>
-                      ))}
-                    </select> */}
-                  <SortableMultiSelect
-                    onChange={(e) => {
-                      const newConfigs = [...ddConfigs];
-                      newConfigs[index].bkfields = e;
-                      setDdConfigs(newConfigs);
-                    }}
-                    value={config.bkfields}
-                    options={availableDateFieldName
-                      .filter(
-                        (f) =>
-                          !(dateFieldName === f)
-                      )}
-                  />
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">
+                        BK Fields
+                      </label>
+                      <SortableMultiSelect
+                        onChange={(e) => {
+                          const newConfigs = [...ddConfigs];
+                          newConfigs[index].bkfields = e;
+                          setDdConfigs(newConfigs);
+                        }}
+                        value={config.bkfields}
+                        options={availableDateFieldName
+                          .filter(
+                            (f) =>
+                              !(dateFieldName === f) && !ddConfigs.some((cfg, idx) => idx !== index && cfg.bkfields.includes(f))
+                          )}
+                      />
+                    </div>
+                  </div>
                 </div>
-              </div>
+              ))}
             </div>
-          ))}
-        </div>
+          </>
+        )}
 
 
 

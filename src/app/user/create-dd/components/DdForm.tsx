@@ -102,33 +102,22 @@ export function DdForm({
         datefieldname: dateFieldName
       };
 
-      // await toast.promise(
-      //   dispatch(testDvCompSg1Async(payload)).unwrap(),
-      //   {
-      //     loading: 'Validating configuration...',
-      //     success: (data) => {
-      //       setQueryResult(data.data);
+      await toast.promise(
+        dispatch(testDvCompDdAsync(payload)).unwrap(),
+        {
+          loading: 'Validating configuration...',
+          success: (data) => {
+            setQueryResult(data.data);
 
-      //       setIsValidated(true);
-      //       return data.message || 'Configuration is valid';
-      //     },
-      //     error: (err) => {
-      //       setIsValidated(false);
-      //       return err.message || 'Validation failed';
-      //     }
-      //   }
-      // );
-
-      const data = await dispatch(testDvCompDdAsync(payload)).unwrap()
-      setQueryResult(data.data);
-      if (data.data.error) {
-        setIsValidated(false);
-        toast.error(data.data.error);
-        return false;
-      }
-      toast.success(data.message || 'Configuration is valid');
-      setIsValidated(true);
-      return true;
+            setIsValidated(true);
+            return data.message || 'Configuration is valid';
+          },
+          error: (err) => {
+            setIsValidated(false);
+            return err.message || 'Validation failed';
+          }
+        }
+      );
     } catch (error) {
       console.error(error);
       toast.error(error.message || 'Validation failed');
@@ -146,6 +135,10 @@ export function DdForm({
     componentType,
     componentSubtype,
     sqlText,
+    selectedBkfields,
+    dateFieldName,
+    comments,
+    version,
     // processType,
   ]);
 
