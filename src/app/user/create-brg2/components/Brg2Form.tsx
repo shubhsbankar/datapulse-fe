@@ -329,7 +329,7 @@ export function Brg2Form({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!(await handleValidate())) return;
+    // if (!(await handleValidate())) return;
 
     try {
       const payload: DvCompBrg2 = {

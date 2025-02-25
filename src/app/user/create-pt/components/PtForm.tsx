@@ -155,7 +155,7 @@ export function PtForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!(await handleValidate())) return;
+    // if (!(await handleValidate())) return;
 
     try {
         if (isUpdate) {
@@ -179,7 +179,7 @@ export function PtForm({
           }
           })).unwrap();
         }
-        toast.success("SG configuration updated successfully");
+        toast.success("PT configuration updated successfully");
       } else {
         // Create mode
         for (const row of satelliteRows) {
@@ -198,7 +198,7 @@ export function PtForm({
                   version,
                 })).unwrap();
               }
-        toast.success("SG configuration created successfully");
+        toast.success("PT configuration created successfully");
       }
 
       // Reset form

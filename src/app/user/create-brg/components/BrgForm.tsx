@@ -259,7 +259,7 @@ export function BrgForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!(await handleValidate())) return;
+    // if (!(await handleValidate())) return;
 
     try {
       const payload: DvCompBrg = {
@@ -277,7 +277,7 @@ export function BrgForm({
       };
 
       await dispatch(createDvCompBrgAsync(payload)).unwrap();
-      toast.success("SG definition created successfully");
+      toast.success("BRG definition created successfully");
 
       // Reset form
       setComponentName("");
