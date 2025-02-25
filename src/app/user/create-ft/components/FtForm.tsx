@@ -61,8 +61,8 @@ export function FtForm({
   const uniqueProjects = Array.from(new Set(projects))
 
   const [ddCount, setDdCount] = useState<number>(1);
-  const [ddConfigs, setDdConfigs] = useState<DdConfig[]>(
-    Array(5).fill(null).map(() => ({
+  const [ddConfigs, setDdConfigs] = useState<DdConfig[]>(() => 
+    Array(1).fill(null).map(() => ({
       ddName: '',
       ddVersion: '1', 
       bkfields: []
@@ -166,11 +166,16 @@ export function FtForm({
 
   useEffect(() => {
     setDdConfigs(prev => {
-      const newConfigs = [...prev];
-      while (newConfigs.length < ddCount) {
-        newConfigs.push({ ddName: '', ddVersion: '1', bkfields: [] });
-      }
-      return newConfigs.slice(0, ddCount);
+      // Create new array with length of ddCount
+      const newConfigs = Array(ddCount).fill(null).map((_, i) => {
+        // Preserve existing config if available, otherwise create new one
+        return i < prev.length ? prev[i] : {
+          ddName: '',
+          ddVersion: '1',
+          bkfields: []
+        };
+      });
+      return newConfigs;
     });
   }, [ddCount]);
 
@@ -187,10 +192,17 @@ export function FtForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("Submit button clicked"); // Add this line
 
-    if (!(await handleValidate())) return;
+    // const validationResult = await handleValidate();
+    // if (!validationResult) {
+    //   console.log("SHubham Validation failed");
+    //   return;
+    // }
 
     try {
+      console.log("Attempting to submit..."); // Add this line
+      
       const payload: DvCompFt = {
         projectshortname: selectedProject,
         comptype: componentType,
@@ -201,32 +213,38 @@ export function FtForm({
         compshortname: `${selectedProject}_${componentType}_${componentSubtype}_${componentName}_${version}`,
         version,
         datefieldname: dateFieldName,
-        ddnums: ddCount,
-        ddnum: 1,
-        ddname: ddConfigs[0].ddName,
-        ddversion: ddConfigs[0].ddVersion,
-        bkfields: ddConfigs[0].bkfields
+        ddnums: componentSubtype === 'type2' ? ddCount : null,
+        ddnum: componentSubtype === 'type2' ? 1 : null,
+        ddname: componentSubtype === 'type2' ? ddConfigs[0].ddName : null,
+        ddversion: componentSubtype === 'type2' ? ddConfigs[0].ddVersion : null,
+        bkfields: componentSubtype === 'type2' ? ddConfigs[0].bkfields : null
       };
+
+      console.log("Payload:", payload); // Add this line
 
       if (isUpdate) {
         // Update mode
-        await dispatch(updateDvCompFtAsync({
+        const response = await dispatch(updateDvCompFtAsync({
           rdvid: selectedRecord?.dvid || 0,
           rdvcompftData: payload
         })).unwrap();
+        console.log("Update response:", response); // Add this line
         toast.success("FT configuration updated successfully");
       } else {
         // Create mode
-        await dispatch(createDvCompFtAsync(payload)).unwrap();
+        const response = await dispatch(createDvCompFtAsync(payload)).unwrap();
+        console.log("Create response:", response); // Add this line
+        if (componentSubtype === 'type2') {
         for (let i = 1; i < ddConfigs.length; i++) {
-
-          await dispatch(createDvCompFtAsync({
+          const additionalResponse = await dispatch(createDvCompFtAsync({
             ...payload,
             ddname: ddConfigs[i].ddName,
             ddversion:  ddConfigs[i].ddVersion,
             bkfields:  ddConfigs[i].bkfields, 
             ddnum:  i + 1,
           })).unwrap();
+          console.log(`Additional DD ${i + 1} response:`, additionalResponse); // Add this line
+        }
         }
         toast.success("FT configuration created successfully");
       }
@@ -237,7 +255,7 @@ export function FtForm({
       setComments("");
       setVersion(1);
       setIsValidated(false); 
-      setDdConfigs(Array(5).fill(null).map(() => ({
+      setDdConfigs(Array(1).fill(null).map(() => ({
         ddName: '',
         ddVersion: '1',
         bkfields: []
@@ -248,18 +266,18 @@ export function FtForm({
       setComponentSubtype("type1");
       setSelectedProject("");
     } catch (error: any) {
-      console.error(error);
+      console.error("Submit error:", error); // Add this line
       toast.error(error.message || `Failed to ${selectedRecord ? 'update' : 'create'} FT configuration`);
     }
   };
   useEffect(() => {
     const fetchDatefields = async () => {
-      // if (selectedDataset) {
+       if (sqlText.length > 0 && isValidSql) {
       const resp = await dispatch(getTableColumnsAsync({ sqltext: sqlText }));
       if (resp.payload.status === 200) {
         setAvailableDateFieldName(resp.payload.data || []);
       }
-      // }
+      }
     };
     fetchDatefields();
   }, [sqlText, dispatch]);
@@ -572,10 +590,11 @@ export function FtForm({
           </button>
 
           <button
+            type="submit"
             disabled={!isValidated}
             className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Create FT Configuration
+            {isUpdate ? 'Update' : 'Create'} FT Configuration
           </button>
         </div>
       </form>

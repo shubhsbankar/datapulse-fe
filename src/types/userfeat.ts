@@ -278,7 +278,7 @@ export interface DvCompFt {
   compshortname?: string;
   version?: number;
   datefieldname?: string;
-  ddnums?: number;
+  ddnums?: number | null;
   ddnum?: number | null;
   ddname?: string | null;
   ddversion?: string | null;
