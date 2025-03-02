@@ -72,6 +72,7 @@ export enum PtColumns {
   satlname = 'satlname',
   satlversion = 'satlversion',
   dhname = 'dhname',
+  dlname = 'dlname',
   actions = 'Actions',
 
 }

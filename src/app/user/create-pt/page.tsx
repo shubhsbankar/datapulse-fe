@@ -12,6 +12,8 @@ import { formatDate } from '@/utils/dateFormatter';
 import { SqlResults } from '../execute-sql/components/SqlResults';
 import { getAllDvCompSg1bsAsync } from '@/store/userfeat/dvcompsg1bThunks';
 import { getAllDvCompPtsAsync } from '@/store/userfeat/dvcompptThunks';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { PtForm2 } from './components/PtForm2';
 
 export default function ConfigSgPage() {
   const dispatch = useAppDispatch();
@@ -51,13 +53,40 @@ export default function ConfigSgPage() {
   return (
     <div className="space-y-6 mt-8">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <PtForm 
+      <div className="bg-white shadow rounded-lg p-6">
+          <Tabs defaultValue="form1">
+            <TabsList className="grid w-full grid-cols-2 h-auto">
+              <TabsTrigger value="form1" className="text-center h-auto whitespace-normal">
+                PT Form 1
+              </TabsTrigger>
+              <TabsTrigger value="form2" className="text-center h-auto whitespace-normal">
+                PT Form 2
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="form1">
+            <PtForm 
           datasets={datasets}
           selectedProject={selectedProject}
           setSelectedProject={setSelectedProject}
           isUpdate={false}
           setQueryResult={setQueryResult}
         />
+            </TabsContent>
+
+            <TabsContent value="form2">
+            <PtForm2 
+          datasets={datasets}
+          selectedProject={selectedProject}
+          setSelectedProject={setSelectedProject}
+          isUpdate={false}
+          setQueryResult={setQueryResult}
+        />
+            </TabsContent>
+          </Tabs>
+
+        </div>
+
         <PtTabs
           onExport={exportToCSV}
         />

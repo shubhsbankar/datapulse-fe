@@ -143,6 +143,7 @@ export interface RdvCompDs {
   user_email?: string;
   compshortname?: string;
   version?: number;
+  datefieldname?: string;
 }
 
 export interface DvCompSg1 {
@@ -206,6 +207,7 @@ export interface DvCompPt {
   createdate?: string;
   compshortname:string;
   dhname?: string;
+  dlname?: string;
   comments?: string;
   version?: number;
 }

@@ -93,7 +93,7 @@ export function FtForm({
       selectedProject !== '' &&
       componentName !== '' &&
       sqlText !== '' &&
-      (componentSubtype !== 'type2' || ddConfigs.every(config => config.ddName !== '' && config.bkfields.length > 0))
+      ddConfigs.every(config => config.ddName !== '' && config.bkfields.length > 0)
     );
   };
 
@@ -104,7 +104,7 @@ export function FtForm({
       if (selectedProject === "") missingFields.push("Project");
       if (componentName === "") missingFields.push("Component Name"); 
       if (sqlText === "") missingFields.push("SQL Text");
-      if (componentSubtype === 'type2' && !ddConfigs.every(config => config.ddName !== '' && config.bkfields.length > 0)) {
+      if (!ddConfigs.every(config => config.ddName !== '' && config.bkfields.length > 0)) {
         missingFields.push("DD Configurations");
       }
       toast.error(`Please fill in the following required fields: ${missingFields.join (", ")}`);
@@ -213,11 +213,11 @@ export function FtForm({
         compshortname: `${selectedProject}_${componentType}_${componentSubtype}_${componentName}_${version}`,
         version,
         datefieldname: dateFieldName,
-        ddnums: componentSubtype === 'type2' ? ddCount : null,
-        ddnum: componentSubtype === 'type2' ? 1 : null,
-        ddname: componentSubtype === 'type2' ? ddConfigs[0].ddName : null,
-        ddversion: componentSubtype === 'type2' ? ddConfigs[0].ddVersion : null,
-        bkfields: componentSubtype === 'type2' ? ddConfigs[0].bkfields : null
+        ddnums: ddCount,
+        ddnum: 1,
+        ddname: ddConfigs[0].ddName ,
+        ddversion: ddConfigs[0].ddVersion,
+        bkfields: ddConfigs[0].bkfields
       };
 
       console.log("Payload:", payload); // Add this line
@@ -234,7 +234,6 @@ export function FtForm({
         // Create mode
         const response = await dispatch(createDvCompFtAsync(payload)).unwrap();
         console.log("Create response:", response); // Add this line
-        if (componentSubtype === 'type2') {
         for (let i = 1; i < ddConfigs.length; i++) {
           const additionalResponse = await dispatch(createDvCompFtAsync({
             ...payload,
@@ -244,7 +243,6 @@ export function FtForm({
             ddnum:  i + 1,
           })).unwrap();
           console.log(`Additional DD ${i + 1} response:`, additionalResponse); // Add this line
-        }
         }
         toast.success("FT configuration created successfully");
       }
@@ -447,35 +445,34 @@ export function FtForm({
             required
           />
         </div>
-        {componentSubtype === 'type2' && (
-          <>
-            {/* Link Count Selection */}
-            <div>
-              <label
-                htmlFor="ddCount"
-                className="block text-sm font-medium text-gray-700"
-              >
-                DD Count (1-14)
-              </label>
-              <input
-                type="number"
-                id="ddCount"
-                value={ddCount}
-                onChange={(e) =>
-                  setDdCount(Math.min(14, Math.max(1, parseInt(e.target.value))))
-                }
-                min={1}
-                max={14}
-                className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
-                required
-              />
-            </div>
-            {/* Warning Message */}
-            <div className="mt-2 mb-2">
-              <p className="text-sm text-amber-600 font-medium">
-                Please select the same bkfields in the same order of dd
-              </p>
-            </div>
+
+        {/* DD Count Selection */}
+        <div>
+          <label
+            htmlFor="ddCount"
+            className="block text-sm font-medium text-gray-700"
+          >
+            DD Count (1-14)
+          </label>
+          <input
+            type="number"
+            id="ddCount"
+            value={ddCount}
+            onChange={(e) =>
+              setDdCount(Math.min(14, Math.max(1, parseInt(e.target.value))))
+            }
+            min={1}
+            max={14}
+            className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
+            required
+          />
+        </div>
+        {/* Warning Message */}
+        <div className="mt-2 mb-2">
+          <p className="text-sm text-amber-600 font-medium">
+            Please select the same bkfields in the same order of dd
+          </p>
+        </div>
 
         {/* DD Configurations */}
         <div className="space-y-4">
@@ -570,10 +567,6 @@ export function FtForm({
                 </div>
               ))}
             </div>
-          </>
-        )}
-
-
 
         <div className="flex justify-end space-x-4">
           <button

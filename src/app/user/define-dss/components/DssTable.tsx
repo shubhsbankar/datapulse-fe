@@ -50,6 +50,7 @@ export enum DssColumn {
   version = 'VERSION',
   parts = 'PARTS',
   partsnum = 'PARTSNUM',
+  datefieldname = 'DATEFIELDNAME',
 }
 
 interface DssTableProps {

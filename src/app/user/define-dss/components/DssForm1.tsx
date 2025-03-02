@@ -45,6 +45,8 @@ export function DssForm1({
   const [availableDsAttributes, setAvailableDsAttributes] = useState<string[]>([]);
   const [partsNumber, setPartsNumber] = useState(0);
   const [parts, setParts] = useState<string[]>([]);
+  const [dateFieldName, setDateFieldName] = useState("");
+ 
 
   const { projectAssigns } = useAppSelector(state => state.project);
   const isProjectAssignedAndActive = (p: string) => projectAssigns.some(project => project.is_active && project.projectshortname === p);
@@ -96,6 +98,7 @@ export function DssForm1({
       selectedDsAttributes.length > 0 &&
       associatedCompType !== '' &&
       associatedCompName !== '' &&
+      dateFieldName !== '' &&
       // tenantId !== '' &&
       // bkcArea !== '' &&
       version > 0
@@ -129,6 +132,7 @@ export function DssForm1({
       satlattr: selectedDsAttributes,
       satlname: 'default',
       compshortname: dsName,
+      datefieldname: dateFieldName,
     };
 
     await toast.promise(
@@ -182,7 +186,8 @@ export function DssForm1({
         satlname: 'default',
         compshortname: dsName,
         parts: parts,
-        partsnum: partsNumber
+        partsnum: partsNumber,
+        datefieldname: dateFieldName,
       }));
 
       toast.success('DSS component created successfully');
@@ -215,7 +220,8 @@ export function DssForm1({
     associatedCompName,
     tenantId,
     bkcArea,
-    version
+    version,
+    dateFieldName
   ]);
 
   return (
@@ -384,6 +390,28 @@ export function DssForm1({
             <option key={name} value={name}>{name}</option>))}
         </select>
       </div>
+
+      <div>
+          <label
+            htmlFor="dateFieldName"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Date Field Name  (Select date, timestamp or yyyy-mm-dd type)
+          </label>
+          <select
+            id="dateFieldName"
+            value={dateFieldName}
+            onChange={(e) => setDateFieldName(e.target.value)}
+            className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
+            required
+          >
+            <option value="">Select Date Field Name</option>
+            {
+              availableDsAttributes.filter(attr => !selectedDsAttributes.includes(attr)).map(df => <option value={df} key={df}>{df}</option>)
+            }
+
+          </select>
+        </div>
 
       {/* Tenant ID dropdown */}
       {/* <div>
