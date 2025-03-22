@@ -363,7 +363,7 @@ export function DdForm({
             onChange={setSelectedBkfields}
             options={availableBkfields}
             value={selectedBkfields}
-            disabled={componentSubtype === 'type1'}
+            disabled={false}
           />
         </div>
         <div>

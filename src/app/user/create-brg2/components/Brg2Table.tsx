@@ -65,7 +65,6 @@ export enum Brg2Columns {
   sqltext = 'sqltext',
   createdate = 'createdate',
   compshortname = 'compshortname',
-  user_email = 'user_email',
   comments = 'comments',
   processtype = 'processtype',
   datefieldname = 'datefieldname',
@@ -79,6 +78,8 @@ export enum Brg2Columns {
   lnkname = 'lnkname',
   lnkversion = 'lnkversion',
   lnkbkfields = 'lnkbkfields',
+  user_email = 'user_email',
+  version = 'version',
   
 
   // actions = 'Actions',

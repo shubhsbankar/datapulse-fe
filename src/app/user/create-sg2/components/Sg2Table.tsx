@@ -49,7 +49,7 @@ export enum Sg2Columns {
   // bkcarea = 'bkcarea',
   // createdate = 'createdate',
   compshortname = 'compshortname',
-  user_email = 'user_email',
+  
   comments = 'comments',
   // version = 'version',
   // processtype = 'processtype',
@@ -61,6 +61,7 @@ export enum Sg2Columns {
   comptype = 'comptype',
   compsubtype = 'compsubtype',
   createdate = 'createdate',
+  user_email = 'user_email',
   version = 'version'
   // actions = 'Actions',
 

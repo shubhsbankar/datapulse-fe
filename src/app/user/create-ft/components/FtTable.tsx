@@ -65,7 +65,7 @@ export enum FtColumns {
   sqltext = 'sqltext',
   createdate = 'createdate',
   compshortname = 'compshortname',
-  version = 'version',
+  
   comments = 'comments',
   datefieldname = 'datefieldname',
   ddnums = 'ddnums',
@@ -73,6 +73,9 @@ export enum FtColumns {
   ddname = 'ddname',
   ddversion = 'ddversion',
   bkfields = 'bkfields',
+  user_email = 'user_email',
+  version = 'version',
+  
   // actions = 'Actions',
 
 }

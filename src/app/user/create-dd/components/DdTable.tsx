@@ -68,6 +68,9 @@ export enum DdColumns {
   comments = 'comments',
   datefieldname = 'datefieldname',
   bkfields = "bkfields",
+  user_email = 'user_email',
+  version = 'version',
+  
   // actions = 'Actions',
 
 }
